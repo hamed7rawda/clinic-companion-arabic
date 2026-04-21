@@ -14,7 +14,311 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      activity_log: {
+        Row: {
+          action: string
+          created_at: string
+          description: string | null
+          id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          description?: string | null
+          id?: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      appointments: {
+        Row: {
+          booked_at: string
+          chat_id: string | null
+          complaint: string | null
+          date: string
+          follow_up_sent: boolean
+          id: string
+          patient_id: string | null
+          patient_name: string
+          rating: number | null
+          status: string
+          time: string
+        }
+        Insert: {
+          booked_at?: string
+          chat_id?: string | null
+          complaint?: string | null
+          date: string
+          follow_up_sent?: boolean
+          id?: string
+          patient_id?: string | null
+          patient_name: string
+          rating?: number | null
+          status?: string
+          time: string
+        }
+        Update: {
+          booked_at?: string
+          chat_id?: string | null
+          complaint?: string | null
+          date?: string
+          follow_up_sent?: boolean
+          id?: string
+          patient_id?: string | null
+          patient_name?: string
+          rating?: number | null
+          status?: string
+          time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clinic_config: {
+        Row: {
+          doctor_chat_id: string | null
+          doctor_name: string | null
+          google_sheet_id: string | null
+          id: number
+          nurse_chat_id: string | null
+          openai_status: boolean | null
+          reminder_afternoon: string | null
+          reminder_evening: string | null
+          reminder_morning: string | null
+          sheets_status: boolean | null
+          slots_per_day: number | null
+          specialty: string | null
+          telegram_status: boolean | null
+          updated_at: string
+          working_hours_end: string | null
+          working_hours_start: string | null
+        }
+        Insert: {
+          doctor_chat_id?: string | null
+          doctor_name?: string | null
+          google_sheet_id?: string | null
+          id: number
+          nurse_chat_id?: string | null
+          openai_status?: boolean | null
+          reminder_afternoon?: string | null
+          reminder_evening?: string | null
+          reminder_morning?: string | null
+          sheets_status?: boolean | null
+          slots_per_day?: number | null
+          specialty?: string | null
+          telegram_status?: boolean | null
+          updated_at?: string
+          working_hours_end?: string | null
+          working_hours_start?: string | null
+        }
+        Update: {
+          doctor_chat_id?: string | null
+          doctor_name?: string | null
+          google_sheet_id?: string | null
+          id?: number
+          nurse_chat_id?: string | null
+          openai_status?: boolean | null
+          reminder_afternoon?: string | null
+          reminder_evening?: string | null
+          reminder_morning?: string | null
+          sheets_status?: boolean | null
+          slots_per_day?: number | null
+          specialty?: string | null
+          telegram_status?: boolean | null
+          updated_at?: string
+          working_hours_end?: string | null
+          working_hours_start?: string | null
+        }
+        Relationships: []
+      }
+      medical_history: {
+        Row: {
+          created_at: string
+          diagnosis: string | null
+          follow_up_status: string
+          id: string
+          patient_id: string | null
+          patient_name: string
+          prescriptions: string | null
+          visit_date: string
+        }
+        Insert: {
+          created_at?: string
+          diagnosis?: string | null
+          follow_up_status?: string
+          id?: string
+          patient_id?: string | null
+          patient_name: string
+          prescriptions?: string | null
+          visit_date?: string
+        }
+        Update: {
+          created_at?: string
+          diagnosis?: string | null
+          follow_up_status?: string
+          id?: string
+          patient_id?: string | null
+          patient_name?: string
+          prescriptions?: string | null
+          visit_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medical_history_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      patients: {
+        Row: {
+          age: number | null
+          allergies: string | null
+          chat_id: string | null
+          created_at: string
+          id: string
+          name: string
+          phone: string | null
+          register_date: string
+        }
+        Insert: {
+          age?: number | null
+          allergies?: string | null
+          chat_id?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          phone?: string | null
+          register_date?: string
+        }
+        Update: {
+          age?: number | null
+          allergies?: string | null
+          chat_id?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          register_date?: string
+        }
+        Relationships: []
+      }
+      prescriptions: {
+        Row: {
+          chat_id: string | null
+          created_at: string
+          dosage: string | null
+          id: string
+          medication_name: string
+          patient_id: string | null
+          patient_name: string
+          reminder_active: boolean
+        }
+        Insert: {
+          chat_id?: string | null
+          created_at?: string
+          dosage?: string | null
+          id?: string
+          medication_name: string
+          patient_id?: string | null
+          patient_name: string
+          reminder_active?: boolean
+        }
+        Update: {
+          chat_id?: string | null
+          created_at?: string
+          dosage?: string | null
+          id?: string
+          medication_name?: string
+          patient_id?: string | null
+          patient_name?: string
+          reminder_active?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescriptions_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      queue: {
+        Row: {
+          id: string
+          join_time: string
+          patient_id: string | null
+          patient_name: string
+          position: number
+          status: string
+        }
+        Insert: {
+          id?: string
+          join_time?: string
+          patient_id?: string | null
+          patient_name: string
+          position: number
+          status?: string
+        }
+        Update: {
+          id?: string
+          join_time?: string
+          patient_id?: string | null
+          patient_name?: string
+          position?: number
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "queue_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflow_runs: {
+        Row: {
+          id: string
+          last_run_at: string | null
+          next_run_at: string | null
+          status: string
+          workflow_key: string
+          workflow_name: string
+        }
+        Insert: {
+          id?: string
+          last_run_at?: string | null
+          next_run_at?: string | null
+          status?: string
+          workflow_key: string
+          workflow_name: string
+        }
+        Update: {
+          id?: string
+          last_run_at?: string | null
+          next_run_at?: string | null
+          status?: string
+          workflow_key?: string
+          workflow_name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
