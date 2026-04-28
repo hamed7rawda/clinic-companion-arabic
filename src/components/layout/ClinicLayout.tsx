@@ -1,31 +1,19 @@
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard,
-  CalendarDays,
-  Users,
-  ListOrdered,
-  FileText,
-  Pill,
-  BarChart3,
-  Settings as SettingsIcon,
-  Activity,
-  Stethoscope,
+  LayoutDashboard, CalendarDays, Users, ListOrdered, FileText, Pill,
+  BarChart3, Settings as SettingsIcon, Activity, Stethoscope, Receipt,
+  TrendingUp, Webhook, LogOut,
 } from "lucide-react";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-  SidebarTrigger,
-  useSidebar,
+  Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
+  SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider,
+  SidebarTrigger, useSidebar,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 const mainItems = [
   { title: "الرئيسية", url: "/", icon: LayoutDashboard },
@@ -36,12 +24,15 @@ const mainItems = [
 
 const recordsItems = [
   { title: "السجلات الطبية", url: "/medical-history", icon: FileText },
-  { title: "الأدوية", url: "/prescriptions", icon: Pill },
+  { title: "الأدوية والوصفات", url: "/prescriptions", icon: Pill },
+  { title: "الفواتير", url: "/invoices", icon: Receipt },
   { title: "التقارير", url: "/reports", icon: BarChart3 },
+  { title: "الإحصائيات", url: "/statistics", icon: TrendingUp },
 ];
 
 const systemItems = [
   { title: "مراقبة الأتمتة", url: "/automation", icon: Activity },
+  { title: "ربط n8n", url: "/webhooks", icon: Webhook },
   { title: "الإعدادات", url: "/settings", icon: SettingsIcon },
 ];
 
@@ -52,23 +43,15 @@ function ClinicSidebar() {
 
   const renderItems = (items: typeof mainItems) =>
     items.map((item) => {
-      const isActive =
-        item.url === "/"
-          ? location.pathname === "/"
-          : location.pathname.startsWith(item.url);
+      const isActive = item.url === "/"
+        ? location.pathname === "/"
+        : location.pathname.startsWith(item.url);
       return (
         <SidebarMenuItem key={item.url}>
           <SidebarMenuButton asChild tooltip={item.title}>
-            <NavLink
-              to={item.url}
-              end={item.url === "/"}
-              className={cn(
-                "transition-smooth",
-                isActive
-                  ? "bg-primary-soft text-primary font-semibold"
-                  : "hover:bg-sidebar-accent"
-              )}
-            >
+            <NavLink to={item.url} end={item.url === "/"}
+              className={cn("transition-smooth",
+                isActive ? "bg-primary-soft text-primary font-semibold" : "hover:bg-sidebar-accent")}>
               <item.icon className="h-5 w-5 shrink-0" />
               {!collapsed && <span>{item.title}</span>}
             </NavLink>
@@ -95,30 +78,35 @@ function ClinicSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>الإدارة اليومية</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>{renderItems(mainItems)}</SidebarMenu>
-          </SidebarGroupContent>
+          <SidebarGroupContent><SidebarMenu>{renderItems(mainItems)}</SidebarMenu></SidebarGroupContent>
         </SidebarGroup>
-
         <SidebarGroup>
-          <SidebarGroupLabel>السجلات</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>{renderItems(recordsItems)}</SidebarMenu>
-          </SidebarGroupContent>
+          <SidebarGroupLabel>السجلات والمالية</SidebarGroupLabel>
+          <SidebarGroupContent><SidebarMenu>{renderItems(recordsItems)}</SidebarMenu></SidebarGroupContent>
         </SidebarGroup>
-
         <SidebarGroup>
           <SidebarGroupLabel>النظام</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>{renderItems(systemItems)}</SidebarMenu>
-          </SidebarGroupContent>
+          <SidebarGroupContent><SidebarMenu>{renderItems(systemItems)}</SidebarMenu></SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
   );
 }
 
+const ROLE_LABEL: Record<string, string> = {
+  doctor: "دكتور", nurse: "ممرض", reception: "استقبال",
+};
+
 export function ClinicLayout() {
+  const { user, roles, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success("تم تسجيل الخروج");
+    navigate("/auth", { replace: true });
+  };
+
   return (
     <SidebarProvider defaultOpen>
       <div dir="rtl" className="flex min-h-screen w-full bg-background font-sans">
@@ -130,13 +118,23 @@ export function ClinicLayout() {
               <span className="flex h-2 w-2 rounded-full bg-success live-dot" />
               <span className="text-muted-foreground">النظام نشط</span>
             </div>
-            <div className="ms-auto text-xs text-muted-foreground">
-              {new Date().toLocaleDateString("ar-EG", {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
+            <div className="ms-auto flex items-center gap-3">
+              <span className="hidden md:inline text-xs text-muted-foreground">
+                {new Date().toLocaleDateString("ar-EG", { weekday: "long", day: "numeric", month: "long" })}
+              </span>
+              {roles.length > 0 && (
+                <div className="flex gap-1">
+                  {roles.map((r) => (
+                    <Badge key={r} variant="secondary" className="text-xs">{ROLE_LABEL[r] ?? r}</Badge>
+                  ))}
+                </div>
+              )}
+              <span className="hidden sm:inline text-xs text-muted-foreground truncate max-w-[160px]">
+                {user?.email}
+              </span>
+              <Button variant="ghost" size="icon" onClick={handleSignOut} title="تسجيل الخروج">
+                <LogOut className="h-4 w-4" />
+              </Button>
             </div>
           </header>
           <main className="flex-1 p-4 md:p-6 animate-fade-in">
