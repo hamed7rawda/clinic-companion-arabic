@@ -102,6 +102,11 @@ function CollapsibleNavGroup({
   );
   const [open, setOpen] = useState(hasActive);
 
+  // افتح المجموعة تلقائياً عند الانتقال إلى صفحة بداخلها
+  useEffect(() => {
+    if (hasActive) setOpen(true);
+  }, [hasActive]);
+
   if (collapsed) {
     return (
       <SidebarGroup>
