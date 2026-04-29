@@ -10,7 +10,7 @@ import {
   SidebarTrigger, useSidebar,
 } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -101,6 +101,11 @@ function CollapsibleNavGroup({
     item.url === "/" ? location.pathname === "/" : location.pathname.startsWith(item.url)
   );
   const [open, setOpen] = useState(hasActive);
+
+  // افتح المجموعة تلقائياً عند الانتقال إلى صفحة بداخلها
+  useEffect(() => {
+    if (hasActive) setOpen(true);
+  }, [hasActive]);
 
   if (collapsed) {
     return (
