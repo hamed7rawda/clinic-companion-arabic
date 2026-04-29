@@ -71,23 +71,48 @@ const Queue = () => {
     };
   }, []);
 
+  const todayStr = () => new Date().toISOString().slice(0, 10);
+
+  const freeAppointmentSlot = async (
+    patientName: string,
+    newStatus: "completed" | "cancelled"
+  ) => {
+    await supabase
+      .from("appointments")
+      .update({ status: newStatus })
+      .eq("patient_name", patientName)
+      .eq("date", todayStr())
+      .eq("status", "booked");
+  };
+
   const callNext = async () => {
     const next = queue[0];
     if (!next) return toast.info("لا يوجد مرضى في الانتظار");
     const { error } = await supabase.from("queue").update({ status: "called" }).eq("id", next.id);
     if (error) return toast.error(error.message);
+    await freeAppointmentSlot(next.patient_name, "completed");
     await logActivity(supabase, "queue_call", `تم استدعاء ${next.patient_name}`);
-    toast.success(`تم استدعاء: ${next.patient_name}`);
+    toast.success(`تم استدعاء: ${next.patient_name} وتحرير الموعد`);
   };
 
   const removePatient = async (id: string, name: string) => {
     await supabase.from("queue").delete().eq("id", id);
+    await freeAppointmentSlot(name, "cancelled");
     await logActivity(supabase, "queue_remove", `تمت إزالة ${name} من القائمة`);
-    toast.success("تمت الإزالة");
+    toast.success("تمت الإزالة وتحرير الموعد");
   };
 
   const clearQueue = async () => {
+    const names = queue.map((q) => q.patient_name);
     await supabase.from("queue").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    if (names.length > 0) {
+      await supabase
+        .from("appointments")
+        .update({ status: "cancelled" })
+        .in("patient_name", names)
+        .eq("date", todayStr())
+        .eq("status", "booked");
+    }
     await logActivity(supabase, "queue_clear", "تم مسح قائمة الانتظار");
     toast.success("تم مسح القائمة");
   };
