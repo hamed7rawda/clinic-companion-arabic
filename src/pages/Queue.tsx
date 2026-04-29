@@ -222,7 +222,7 @@ const Queue = () => {
                   <div className="flex-1 min-w-0">
                     <p className="truncate font-semibold">{q.patient_name}</p>
                     <p className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Clock className="h-3 w-3" /> منذ {timeAgo(q.join_time)}
+                      <Clock className="h-3 w-3" /> {timeAgo(q.join_time)}
                     </p>
                   </div>
                   {idx === 0 && (
