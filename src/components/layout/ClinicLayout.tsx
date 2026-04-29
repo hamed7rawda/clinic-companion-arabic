@@ -2,13 +2,15 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, CalendarDays, Users, ListOrdered, FileText, Pill,
   BarChart3, Settings as SettingsIcon, Activity, Stethoscope, Receipt,
-  TrendingUp, Webhook, LogOut,
+  TrendingUp, Webhook, LogOut, ChevronDown,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider,
   SidebarTrigger, useSidebar,
 } from "@/components/ui/sidebar";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -76,20 +78,52 @@ function ClinicSidebar() {
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>الإدارة اليومية</SidebarGroupLabel>
-          <SidebarGroupContent><SidebarMenu>{renderItems(mainItems)}</SidebarMenu></SidebarGroupContent>
-        </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>السجلات والمالية</SidebarGroupLabel>
-          <SidebarGroupContent><SidebarMenu>{renderItems(recordsItems)}</SidebarMenu></SidebarGroupContent>
-        </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>النظام</SidebarGroupLabel>
-          <SidebarGroupContent><SidebarMenu>{renderItems(systemItems)}</SidebarMenu></SidebarGroupContent>
-        </SidebarGroup>
+        <CollapsibleNavGroup label="الإدارة اليومية" items={mainItems} renderItems={renderItems} collapsed={collapsed} />
+        <CollapsibleNavGroup label="السجلات والمالية" items={recordsItems} renderItems={renderItems} collapsed={collapsed} />
+        <CollapsibleNavGroup label="النظام" items={systemItems} renderItems={renderItems} collapsed={collapsed} />
       </SidebarContent>
     </Sidebar>
+  );
+}
+
+type NavItem = { title: string; url: string; icon: typeof LayoutDashboard };
+
+function CollapsibleNavGroup({
+  label, items, renderItems, collapsed,
+}: {
+  label: string;
+  items: NavItem[];
+  renderItems: (items: NavItem[]) => React.ReactNode;
+  collapsed: boolean;
+}) {
+  const location = useLocation();
+  const hasActive = items.some((item) =>
+    item.url === "/" ? location.pathname === "/" : location.pathname.startsWith(item.url)
+  );
+  const [open, setOpen] = useState(hasActive);
+
+  if (collapsed) {
+    return (
+      <SidebarGroup>
+        <SidebarGroupContent><SidebarMenu>{renderItems(items)}</SidebarMenu></SidebarGroupContent>
+      </SidebarGroup>
+    );
+  }
+
+  return (
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <SidebarGroup>
+        <CollapsibleTrigger asChild>
+          <SidebarGroupLabel className="flex w-full cursor-pointer items-center justify-between hover:text-foreground transition-smooth">
+            <span>{label}</span>
+            <ChevronDown className={cn("h-4 w-4 transition-transform", open ? "rotate-180" : "")} />
+          </SidebarGroupLabel>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <SidebarGroupContent><SidebarMenu>{renderItems(items)}</SidebarMenu></SidebarGroupContent>
+        </CollapsibleContent>
+      </SidebarGroup>
+    </Collapsible>
   );
 }
 
