@@ -39,9 +39,13 @@ const systemItems = [
 ];
 
 function ClinicSidebar() {
-  const { state } = useSidebar();
+  const { state, isMobile, setOpenMobile } = useSidebar();
   const collapsed = state === "collapsed";
   const location = useLocation();
+
+  const handleNavClick = () => {
+    if (isMobile) setOpenMobile(false);
+  };
 
   const renderItems = (items: typeof mainItems) =>
     items.map((item) => {
@@ -51,7 +55,7 @@ function ClinicSidebar() {
       return (
         <SidebarMenuItem key={item.url}>
           <SidebarMenuButton asChild tooltip={item.title}>
-            <NavLink to={item.url} end={item.url === "/"}
+            <NavLink to={item.url} end={item.url === "/"} onClick={handleNavClick}
               className={cn("transition-smooth",
                 isActive ? "bg-primary-soft text-primary font-semibold" : "hover:bg-sidebar-accent")}>
               <item.icon className="h-5 w-5 shrink-0" />
