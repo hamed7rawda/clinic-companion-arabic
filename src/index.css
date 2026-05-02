@@ -59,15 +59,15 @@
 
     --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
-    /* Sidebar (RTL) */
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 215 35% 22%;
-    --sidebar-primary: 210 90% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 90% 96%;
-    --sidebar-accent-foreground: 210 90% 35%;
-    --sidebar-border: 210 30% 92%;
-    --sidebar-ring: 210 90% 48%;
+    /* Sidebar (RTL) - Darker, more vivid medical palette */
+    --sidebar-background: 215 45% 16%;
+    --sidebar-foreground: 210 40% 92%;
+    --sidebar-primary: 195 90% 55%;
+    --sidebar-primary-foreground: 215 50% 12%;
+    --sidebar-accent: 215 40% 24%;
+    --sidebar-accent-foreground: 195 90% 75%;
+    --sidebar-border: 215 35% 24%;
+    --sidebar-ring: 195 90% 55%;
   }
 
   .dark {

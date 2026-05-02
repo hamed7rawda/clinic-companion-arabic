@@ -47,7 +47,7 @@ function ClinicSidebar() {
     if (isMobile) setOpenMobile(false);
   };
 
-  const renderItems = (items: typeof mainItems) =>
+  const renderItems = (items: typeof mainItems, accent: string) =>
     items.map((item) => {
       const isActive = item.url === "/"
         ? location.pathname === "/"
@@ -56,9 +56,11 @@ function ClinicSidebar() {
         <SidebarMenuItem key={item.url}>
           <SidebarMenuButton asChild tooltip={item.title}>
             <NavLink to={item.url} end={item.url === "/"} onClick={handleNavClick}
-              className={cn("transition-smooth",
-                isActive ? "bg-primary-soft text-primary font-semibold" : "hover:bg-sidebar-accent")}>
-              <item.icon className="h-5 w-5 shrink-0" />
+              className={cn("transition-smooth rounded-md",
+                isActive
+                  ? "bg-sidebar-primary text-sidebar-primary-foreground font-bold shadow-md"
+                  : "text-sidebar-foreground/85 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground")}>
+              <item.icon className={cn("h-5 w-5 shrink-0", !isActive && accent)} />
               {!collapsed && <span>{item.title}</span>}
             </NavLink>
           </SidebarMenuButton>
@@ -68,23 +70,23 @@ function ClinicSidebar() {
 
   return (
     <Sidebar collapsible="icon" side="right">
-      <SidebarHeader className="border-b border-sidebar-border p-4">
+      <SidebarHeader className="border-b border-sidebar-border p-4 bg-sidebar-background">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl gradient-primary shadow-glow">
             <Stethoscope className="h-5 w-5 text-primary-foreground" />
           </div>
           {!collapsed && (
             <div className="overflow-hidden">
-              <h1 className="text-sm font-bold leading-tight">نظام العيادة</h1>
-              <p className="text-xs text-muted-foreground">المتكامل</p>
+              <h1 className="text-sm font-bold leading-tight text-sidebar-foreground">نظام العيادة</h1>
+              <p className="text-xs text-sidebar-foreground/60">المتكامل</p>
             </div>
           )}
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <CollapsibleNavGroup label="الإدارة اليومية" items={mainItems} renderItems={renderItems} collapsed={collapsed} />
-        <CollapsibleNavGroup label="السجلات والمالية" items={recordsItems} renderItems={renderItems} collapsed={collapsed} />
-        <CollapsibleNavGroup label="النظام" items={systemItems} renderItems={renderItems} collapsed={collapsed} />
+        <CollapsibleNavGroup label="الإدارة اليومية" labelColor="text-sky-300" iconColor="text-sky-400" items={mainItems} renderItems={renderItems} collapsed={collapsed} />
+        <CollapsibleNavGroup label="السجلات والمالية" labelColor="text-emerald-300" iconColor="text-emerald-400" items={recordsItems} renderItems={renderItems} collapsed={collapsed} />
+        <CollapsibleNavGroup label="النظام" labelColor="text-amber-300" iconColor="text-amber-400" items={systemItems} renderItems={renderItems} collapsed={collapsed} />
       </SidebarContent>
     </Sidebar>
   );
@@ -93,26 +95,27 @@ function ClinicSidebar() {
 type NavItem = { title: string; url: string; icon: typeof LayoutDashboard };
 
 function CollapsibleNavGroup({
-  label, items, renderItems, collapsed,
+  label, labelColor, iconColor, items, renderItems, collapsed,
 }: {
   label: string;
+  labelColor: string;
+  iconColor: string;
   items: NavItem[];
-  renderItems: (items: NavItem[]) => React.ReactNode;
+  renderItems: (items: NavItem[], accent: string) => React.ReactNode;
   collapsed: boolean;
 }) {
-  const location = useLocation();
   if (collapsed) {
     return (
       <SidebarGroup>
-        <SidebarGroupContent><SidebarMenu>{renderItems(items)}</SidebarMenu></SidebarGroupContent>
+        <SidebarGroupContent><SidebarMenu>{renderItems(items, iconColor)}</SidebarMenu></SidebarGroupContent>
       </SidebarGroup>
     );
   }
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>{label}</SidebarGroupLabel>
-      <SidebarGroupContent><SidebarMenu>{renderItems(items)}</SidebarMenu></SidebarGroupContent>
+      <SidebarGroupLabel className={cn("font-bold uppercase tracking-wide text-xs", labelColor)}>{label}</SidebarGroupLabel>
+      <SidebarGroupContent><SidebarMenu>{renderItems(items, iconColor)}</SidebarMenu></SidebarGroupContent>
     </SidebarGroup>
   );
 }
