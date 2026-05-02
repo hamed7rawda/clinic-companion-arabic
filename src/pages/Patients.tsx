@@ -178,12 +178,12 @@ const Patients = () => {
 
       <Card className="p-4 shadow-card border-0">
         <div className="relative">
-          <Search className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="ابحث بالاسم أو الهاتف أو المعرف..."
-            className="pe-10"
+            className="pr-11"
           />
         </div>
       </Card>
