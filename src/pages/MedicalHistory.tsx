@@ -51,15 +51,12 @@ const MedicalHistory = () => {
       />
 
       <Card className="p-4 shadow-card border-0 grid gap-3 sm:grid-cols-2">
-        <div className="relative">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-          <Input
-            placeholder="ابحث باسم المريض..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pr-11"
-          />
-        </div>
+        <Input
+          startIcon={<Search className="h-4 w-4" />}
+          placeholder="ابحث باسم المريض..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
         <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
       </Card>
 
