@@ -101,16 +101,6 @@ function CollapsibleNavGroup({
   collapsed: boolean;
 }) {
   const location = useLocation();
-  const hasActive = items.some((item) =>
-    item.url === "/" ? location.pathname === "/" : location.pathname.startsWith(item.url)
-  );
-  const [open, setOpen] = useState(hasActive);
-
-  // افتح المجموعة تلقائياً عند الانتقال إلى صفحة بداخلها
-  useEffect(() => {
-    if (hasActive) setOpen(true);
-  }, [hasActive]);
-
   if (collapsed) {
     return (
       <SidebarGroup>
@@ -120,19 +110,10 @@ function CollapsibleNavGroup({
   }
 
   return (
-    <Collapsible open={open} onOpenChange={setOpen}>
-      <SidebarGroup>
-        <CollapsibleTrigger asChild>
-          <SidebarGroupLabel className="flex w-full cursor-pointer items-center justify-between hover:text-foreground transition-smooth">
-            <span>{label}</span>
-            <ChevronDown className={cn("h-4 w-4 transition-transform", open ? "rotate-180" : "")} />
-          </SidebarGroupLabel>
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <SidebarGroupContent><SidebarMenu>{renderItems(items)}</SidebarMenu></SidebarGroupContent>
-        </CollapsibleContent>
-      </SidebarGroup>
-    </Collapsible>
+    <SidebarGroup>
+      <SidebarGroupLabel>{label}</SidebarGroupLabel>
+      <SidebarGroupContent><SidebarMenu>{renderItems(items)}</SidebarMenu></SidebarGroupContent>
+    </SidebarGroup>
   );
 }
 
