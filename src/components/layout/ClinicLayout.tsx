@@ -95,26 +95,27 @@ function ClinicSidebar() {
 type NavItem = { title: string; url: string; icon: typeof LayoutDashboard };
 
 function CollapsibleNavGroup({
-  label, items, renderItems, collapsed,
+  label, labelColor, iconColor, items, renderItems, collapsed,
 }: {
   label: string;
+  labelColor: string;
+  iconColor: string;
   items: NavItem[];
-  renderItems: (items: NavItem[]) => React.ReactNode;
+  renderItems: (items: NavItem[], accent: string) => React.ReactNode;
   collapsed: boolean;
 }) {
-  const location = useLocation();
   if (collapsed) {
     return (
       <SidebarGroup>
-        <SidebarGroupContent><SidebarMenu>{renderItems(items)}</SidebarMenu></SidebarGroupContent>
+        <SidebarGroupContent><SidebarMenu>{renderItems(items, iconColor)}</SidebarMenu></SidebarGroupContent>
       </SidebarGroup>
     );
   }
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>{label}</SidebarGroupLabel>
-      <SidebarGroupContent><SidebarMenu>{renderItems(items)}</SidebarMenu></SidebarGroupContent>
+      <SidebarGroupLabel className={cn("font-bold uppercase tracking-wide text-xs", labelColor)}>{label}</SidebarGroupLabel>
+      <SidebarGroupContent><SidebarMenu>{renderItems(items, iconColor)}</SidebarMenu></SidebarGroupContent>
     </SidebarGroup>
   );
 }
