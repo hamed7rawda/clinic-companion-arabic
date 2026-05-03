@@ -7,12 +7,12 @@ import { ClinicLayout } from "./components/layout/ClinicLayout";
 import { AuthProvider } from "./hooks/useAuth";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import Auth from "./pages/Auth";
+import MainMenu from "./pages/MainMenu";
 import Dashboard from "./pages/Dashboard";
 import Appointments from "./pages/Appointments";
 import Patients from "./pages/Patients";
 import Queue from "./pages/Queue";
 import MedicalHistory from "./pages/MedicalHistory";
-import Prescriptions from "./pages/Prescriptions";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import Automation from "./pages/Automation";
@@ -34,12 +34,12 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route element={<ProtectedRoute />}>
               <Route element={<ClinicLayout />}>
-                <Route path="/" element={<Dashboard />} />
+                <Route path="/" element={<MainMenu />} />
+                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/appointments" element={<Appointments />} />
                 <Route path="/patients" element={<Patients />} />
                 <Route path="/queue" element={<Queue />} />
                 <Route path="/medical-history" element={<MedicalHistory />} />
-                <Route path="/prescriptions" element={<Prescriptions />} />
                 <Route path="/invoices" element={<Invoices />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/statistics" element={<Statistics />} />

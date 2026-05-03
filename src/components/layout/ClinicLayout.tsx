@@ -1,8 +1,8 @@
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard, CalendarDays, Users, ListOrdered, FileText, Pill,
+  LayoutDashboard, CalendarDays, Users, ListOrdered, FileText,
   BarChart3, Settings as SettingsIcon, Activity, Stethoscope, Receipt,
-  TrendingUp, Webhook, LogOut, ChevronDown,
+  TrendingUp, Webhook, LogOut, ChevronDown, Home,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
@@ -18,7 +18,8 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
 const mainItems = [
-  { title: "الرئيسية", url: "/", icon: LayoutDashboard },
+  { title: "القائمة الرئيسية", url: "/", icon: Home },
+  { title: "لوحة التحكم", url: "/dashboard", icon: LayoutDashboard },
   { title: "المواعيد", url: "/appointments", icon: CalendarDays },
   { title: "المرضى", url: "/patients", icon: Users },
   { title: "قائمة الانتظار", url: "/queue", icon: ListOrdered },
@@ -26,7 +27,7 @@ const mainItems = [
 
 const recordsItems = [
   { title: "السجلات الطبية", url: "/medical-history", icon: FileText },
-  { title: "الأدوية والوصفات", url: "/prescriptions", icon: Pill },
+  
   { title: "الفواتير", url: "/invoices", icon: Receipt },
   { title: "التقارير", url: "/reports", icon: BarChart3 },
   { title: "الإحصائيات", url: "/statistics", icon: TrendingUp },
