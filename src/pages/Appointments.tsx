@@ -41,7 +41,8 @@ import {
 } from "@/components/ui/dialog";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { RatingStars } from "@/components/shared/RatingStars";
-import { CheckCircle2, X, RefreshCw, CalendarDays, List } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { CheckCircle2, X, RefreshCw, CalendarDays, List, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { formatDate, formatTime, logActivity } from "@/lib/clinic-utils";
 import { ar } from "date-fns/locale";
@@ -65,6 +66,28 @@ const Appointments = () => {
   const [reschedTarget, setReschedTarget] = useState<Appointment | null>(null);
   const [newDate, setNewDate] = useState("");
   const [newTime, setNewTime] = useState("");
+  const [addOpen, setAddOpen] = useState(false);
+  const [addForm, setAddForm] = useState({ patient_name: "", date: "", time: "", complaint: "" });
+
+  const submitAdd = async () => {
+    const name = addForm.patient_name.trim();
+    if (!name || !addForm.date || !addForm.time) {
+      toast.error("الاسم والتاريخ والوقت مطلوبة");
+      return;
+    }
+    const { error } = await supabase.from("appointments").insert({
+      patient_name: name,
+      date: addForm.date,
+      time: addForm.time,
+      complaint: addForm.complaint || null,
+      status: "booked",
+    });
+    if (error) return toast.error(error.message);
+    await logActivity(supabase, "appointment_booked", `تم حجز موعد لـ ${name}`);
+    toast.success("تمت إضافة الموعد");
+    setAddForm({ patient_name: "", date: "", time: "", complaint: "" });
+    setAddOpen(false);
+  };
 
   const load = async () => {
     const { data } = await supabase
@@ -145,23 +168,28 @@ const Appointments = () => {
         title="إدارة المواعيد"
         description="عرض وإدارة جميع مواعيد العيادة"
         action={
-          <div className="flex items-center gap-1 rounded-lg border bg-card p-1">
-            <Button
-              variant={view === "table" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setView("table")}
-              className="gap-1"
-            >
-              <List className="h-4 w-4" /> جدول
+          <div className="flex items-center gap-2">
+            <Button onClick={() => setAddOpen(true)} className="gap-2 gradient-primary text-primary-foreground hover:opacity-90">
+              <Plus className="h-4 w-4" /> إضافة موعد
             </Button>
-            <Button
-              variant={view === "calendar" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setView("calendar")}
-              className="gap-1"
-            >
-              <CalendarDays className="h-4 w-4" /> تقويم
-            </Button>
+            <div className="flex items-center gap-1 rounded-lg border bg-card p-1">
+              <Button
+                variant={view === "table" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setView("table")}
+                className="gap-1"
+              >
+                <List className="h-4 w-4" /> جدول
+              </Button>
+              <Button
+                variant={view === "calendar" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setView("calendar")}
+                className="gap-1"
+              >
+                <CalendarDays className="h-4 w-4" /> تقويم
+              </Button>
+            </div>
           </div>
         }
       />
@@ -318,6 +346,47 @@ const Appointments = () => {
           </div>
           <DialogFooter>
             <Button onClick={submitReschedule}>تأكيد</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={addOpen} onOpenChange={setAddOpen}>
+        <DialogContent dir="rtl">
+          <DialogHeader>
+            <DialogTitle>إضافة موعد جديد</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label>اسم المريض</Label>
+              <Input
+                value={addForm.patient_name}
+                onChange={(e) => setAddForm({ ...addForm, patient_name: e.target.value })}
+                placeholder="مثال: أحمد محمد"
+                maxLength={100}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>التاريخ</Label>
+                <Input type="date" value={addForm.date} onChange={(e) => setAddForm({ ...addForm, date: e.target.value })} />
+              </div>
+              <div>
+                <Label>الوقت</Label>
+                <Input type="time" value={addForm.time} onChange={(e) => setAddForm({ ...addForm, time: e.target.value })} />
+              </div>
+            </div>
+            <div>
+              <Label>الشكوى (اختياري)</Label>
+              <Textarea
+                value={addForm.complaint}
+                onChange={(e) => setAddForm({ ...addForm, complaint: e.target.value })}
+                placeholder="وصف موجز للشكوى"
+                maxLength={500}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={submitAdd}>إضافة الموعد</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
