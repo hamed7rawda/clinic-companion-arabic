@@ -349,6 +349,47 @@ const Appointments = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={addOpen} onOpenChange={setAddOpen}>
+        <DialogContent dir="rtl">
+          <DialogHeader>
+            <DialogTitle>إضافة موعد جديد</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label>اسم المريض</Label>
+              <Input
+                value={addForm.patient_name}
+                onChange={(e) => setAddForm({ ...addForm, patient_name: e.target.value })}
+                placeholder="مثال: أحمد محمد"
+                maxLength={100}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>التاريخ</Label>
+                <Input type="date" value={addForm.date} onChange={(e) => setAddForm({ ...addForm, date: e.target.value })} />
+              </div>
+              <div>
+                <Label>الوقت</Label>
+                <Input type="time" value={addForm.time} onChange={(e) => setAddForm({ ...addForm, time: e.target.value })} />
+              </div>
+            </div>
+            <div>
+              <Label>الشكوى (اختياري)</Label>
+              <Textarea
+                value={addForm.complaint}
+                onChange={(e) => setAddForm({ ...addForm, complaint: e.target.value })}
+                placeholder="وصف موجز للشكوى"
+                maxLength={500}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={submitAdd}>إضافة الموعد</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
