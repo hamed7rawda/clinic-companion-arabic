@@ -34,12 +34,12 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route element={<ProtectedRoute />}>
               <Route element={<ClinicLayout />}>
-                <Route path="/" element={<Dashboard />} />
+                <Route path="/" element={<MainMenu />} />
+                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/appointments" element={<Appointments />} />
                 <Route path="/patients" element={<Patients />} />
                 <Route path="/queue" element={<Queue />} />
                 <Route path="/medical-history" element={<MedicalHistory />} />
-                <Route path="/prescriptions" element={<Prescriptions />} />
                 <Route path="/invoices" element={<Invoices />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/statistics" element={<Statistics />} />
