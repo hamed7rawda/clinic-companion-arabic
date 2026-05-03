@@ -109,13 +109,15 @@ const Patients = () => {
       name: form.name.trim(),
       age: isNaN(ageVal) ? null : ageVal,
       phone: form.phone.trim() || null,
-      chat_id: form.chat_id.trim() || null,
+      address: form.address.trim() || null,
+      gender: form.gender.trim() || null,
+      medical_history: form.medical_history.trim() || null,
       allergies: form.allergies.trim() || null,
     });
     if (error) return toast.error(error.message);
     await logActivity(supabase, "patient_added", `تم تسجيل مريض جديد: ${form.name}`);
     toast.success("تمت إضافة المريض");
-    setForm({ name: "", age: "", phone: "", chat_id: "", allergies: "" });
+    setForm({ name: "", age: "", phone: "", address: "", gender: "", medical_history: "", allergies: "" });
     setAddOpen(false);
     load();
   };
