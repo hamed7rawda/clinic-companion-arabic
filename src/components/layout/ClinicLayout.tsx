@@ -26,7 +26,7 @@ const mainItems = [
 
 const recordsItems = [
   { title: "السجلات الطبية", url: "/medical-history", icon: FileText },
-  { title: "الأدوية والوصفات", url: "/prescriptions", icon: Pill },
+  
   { title: "الفواتير", url: "/invoices", icon: Receipt },
   { title: "التقارير", url: "/reports", icon: BarChart3 },
   { title: "الإحصائيات", url: "/statistics", icon: TrendingUp },
