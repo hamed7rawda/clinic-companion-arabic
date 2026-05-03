@@ -65,7 +65,7 @@ const Patients = () => {
   const [appts, setAppts] = useState<any[]>([]);
   const [meds, setMeds] = useState<any[]>([]);
   const [addOpen, setAddOpen] = useState(false);
-  const [form, setForm] = useState({ name: "", age: "", phone: "", chat_id: "", allergies: "" });
+  const [form, setForm] = useState({ name: "", age: "", phone: "", address: "", gender: "", medical_history: "", allergies: "" });
 
   const load = async () => {
     const { data } = await supabase
