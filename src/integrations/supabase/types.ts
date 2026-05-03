@@ -349,31 +349,40 @@ export type Database = {
       }
       patients: {
         Row: {
+          address: string | null
           age: number | null
           allergies: string | null
           chat_id: string | null
           created_at: string
+          gender: string | null
           id: string
+          medical_history: string | null
           name: string
           phone: string | null
           register_date: string
         }
         Insert: {
+          address?: string | null
           age?: number | null
           allergies?: string | null
           chat_id?: string | null
           created_at?: string
+          gender?: string | null
           id?: string
+          medical_history?: string | null
           name: string
           phone?: string | null
           register_date?: string
         }
         Update: {
+          address?: string | null
           age?: number | null
           allergies?: string | null
           chat_id?: string | null
           created_at?: string
+          gender?: string | null
           id?: string
+          medical_history?: string | null
           name?: string
           phone?: string | null
           register_date?: string
