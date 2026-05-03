@@ -105,14 +105,6 @@ const Settings = () => {
         <h2 className="mb-4 text-lg font-bold">إعدادات الإشعارات</h2>
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
-            <Label>معرف تيليجرام للطبيب</Label>
-            <Input value={cfg.doctor_chat_id ?? ""} onChange={(e) => update("doctor_chat_id", e.target.value)} placeholder="123456789" maxLength={50} />
-          </div>
-          <div>
-            <Label>معرف تيليجرام للممرض</Label>
-            <Input value={cfg.nurse_chat_id ?? ""} onChange={(e) => update("nurse_chat_id", e.target.value)} placeholder="987654321" maxLength={50} />
-          </div>
-          <div>
             <Label>تذكير الصباح</Label>
             <Input type="time" value={cfg.reminder_morning ?? ""} onChange={(e) => update("reminder_morning", e.target.value)} />
           </div>
