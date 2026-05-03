@@ -12,6 +12,14 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -33,6 +41,9 @@ interface Patient {
   age: number | null;
   phone: string | null;
   allergies: string | null;
+  address: string | null;
+  gender: string | null;
+  medical_history: string | null;
   register_date: string;
 }
 
@@ -40,7 +51,9 @@ const patientSchema = z.object({
   name: z.string().trim().min(2, "الاسم قصير جداً").max(100, "الاسم طويل"),
   age: z.coerce.number().int().min(0).max(130).optional().or(z.literal(NaN)),
   phone: z.string().trim().max(20).optional(),
-  chat_id: z.string().trim().max(50).optional(),
+  address: z.string().trim().max(200).optional(),
+  gender: z.string().trim().max(20).optional(),
+  medical_history: z.string().trim().max(1000).optional(),
   allergies: z.string().trim().max(500).optional(),
 });
 
@@ -52,7 +65,7 @@ const Patients = () => {
   const [appts, setAppts] = useState<any[]>([]);
   const [meds, setMeds] = useState<any[]>([]);
   const [addOpen, setAddOpen] = useState(false);
-  const [form, setForm] = useState({ name: "", age: "", phone: "", chat_id: "", allergies: "" });
+  const [form, setForm] = useState({ name: "", age: "", phone: "", address: "", gender: "", medical_history: "", allergies: "" });
 
   const load = async () => {
     const { data } = await supabase
@@ -96,13 +109,15 @@ const Patients = () => {
       name: form.name.trim(),
       age: isNaN(ageVal) ? null : ageVal,
       phone: form.phone.trim() || null,
-      chat_id: form.chat_id.trim() || null,
+      address: form.address.trim() || null,
+      gender: form.gender.trim() || null,
+      medical_history: form.medical_history.trim() || null,
       allergies: form.allergies.trim() || null,
     });
     if (error) return toast.error(error.message);
     await logActivity(supabase, "patient_added", `تم تسجيل مريض جديد: ${form.name}`);
     toast.success("تمت إضافة المريض");
-    setForm({ name: "", age: "", phone: "", chat_id: "", allergies: "" });
+    setForm({ name: "", age: "", phone: "", address: "", gender: "", medical_history: "", allergies: "" });
     setAddOpen(false);
     load();
   };
@@ -150,12 +165,22 @@ const Patients = () => {
                     maxLength={20}
                   />
                 </div>
+                <div>
+                  <Label>الجنس</Label>
+                  <Select value={form.gender} onValueChange={(v) => setForm({ ...form, gender: v })}>
+                    <SelectTrigger><SelectValue placeholder="اختر الجنس" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">ذكر</SelectItem>
+                      <SelectItem value="female">أنثى</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="sm:col-span-2">
-                  <Label>معرف تيليجرام (Chat ID)</Label>
+                  <Label>العنوان</Label>
                   <Input
-                    value={form.chat_id}
-                    onChange={(e) => setForm({ ...form, chat_id: e.target.value })}
-                    maxLength={50}
+                    value={form.address}
+                    onChange={(e) => setForm({ ...form, address: e.target.value })}
+                    maxLength={200}
                   />
                 </div>
                 <div className="sm:col-span-2">
@@ -165,6 +190,16 @@ const Patients = () => {
                     onChange={(e) => setForm({ ...form, allergies: e.target.value })}
                     placeholder="مثال: بنسلين، سلفا"
                     maxLength={500}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <Label>التاريخ الطبي</Label>
+                  <Textarea
+                    value={form.medical_history}
+                    onChange={(e) => setForm({ ...form, medical_history: e.target.value })}
+                    placeholder="الأمراض المزمنة، العمليات السابقة، ..."
+                    maxLength={1000}
+                    rows={3}
                   />
                 </div>
               </div>
