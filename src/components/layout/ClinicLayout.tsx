@@ -2,7 +2,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, CalendarDays, Users, ListOrdered, FileText,
   BarChart3, Settings as SettingsIcon, Activity, Stethoscope, Receipt,
-  TrendingUp, Webhook, LogOut, ChevronDown,
+  TrendingUp, Webhook, LogOut, ChevronDown, Home,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
