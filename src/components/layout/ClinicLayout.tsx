@@ -18,7 +18,8 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
 const mainItems = [
-  { title: "الرئيسية", url: "/", icon: LayoutDashboard },
+  { title: "القائمة الرئيسية", url: "/", icon: Home },
+  { title: "لوحة التحكم", url: "/dashboard", icon: LayoutDashboard },
   { title: "المواعيد", url: "/appointments", icon: CalendarDays },
   { title: "المرضى", url: "/patients", icon: Users },
   { title: "قائمة الانتظار", url: "/queue", icon: ListOrdered },
