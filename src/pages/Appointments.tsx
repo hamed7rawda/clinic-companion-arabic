@@ -41,7 +41,8 @@ import {
 } from "@/components/ui/dialog";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { RatingStars } from "@/components/shared/RatingStars";
-import { CheckCircle2, X, RefreshCw, CalendarDays, List } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { CheckCircle2, X, RefreshCw, CalendarDays, List, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { formatDate, formatTime, logActivity } from "@/lib/clinic-utils";
 import { ar } from "date-fns/locale";
