@@ -66,6 +66,28 @@ const Appointments = () => {
   const [reschedTarget, setReschedTarget] = useState<Appointment | null>(null);
   const [newDate, setNewDate] = useState("");
   const [newTime, setNewTime] = useState("");
+  const [addOpen, setAddOpen] = useState(false);
+  const [addForm, setAddForm] = useState({ patient_name: "", date: "", time: "", complaint: "" });
+
+  const submitAdd = async () => {
+    const name = addForm.patient_name.trim();
+    if (!name || !addForm.date || !addForm.time) {
+      toast.error("الاسم والتاريخ والوقت مطلوبة");
+      return;
+    }
+    const { error } = await supabase.from("appointments").insert({
+      patient_name: name,
+      date: addForm.date,
+      time: addForm.time,
+      complaint: addForm.complaint || null,
+      status: "booked",
+    });
+    if (error) return toast.error(error.message);
+    await logActivity(supabase, "appointment_booked", `تم حجز موعد لـ ${name}`);
+    toast.success("تمت إضافة الموعد");
+    setAddForm({ patient_name: "", date: "", time: "", complaint: "" });
+    setAddOpen(false);
+  };
 
   const load = async () => {
     const { data } = await supabase
