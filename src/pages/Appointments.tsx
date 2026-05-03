@@ -168,23 +168,28 @@ const Appointments = () => {
         title="إدارة المواعيد"
         description="عرض وإدارة جميع مواعيد العيادة"
         action={
-          <div className="flex items-center gap-1 rounded-lg border bg-card p-1">
-            <Button
-              variant={view === "table" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setView("table")}
-              className="gap-1"
-            >
-              <List className="h-4 w-4" /> جدول
+          <div className="flex items-center gap-2">
+            <Button onClick={() => setAddOpen(true)} className="gap-2 gradient-primary text-primary-foreground hover:opacity-90">
+              <Plus className="h-4 w-4" /> إضافة موعد
             </Button>
-            <Button
-              variant={view === "calendar" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setView("calendar")}
-              className="gap-1"
-            >
-              <CalendarDays className="h-4 w-4" /> تقويم
-            </Button>
+            <div className="flex items-center gap-1 rounded-lg border bg-card p-1">
+              <Button
+                variant={view === "table" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setView("table")}
+                className="gap-1"
+              >
+                <List className="h-4 w-4" /> جدول
+              </Button>
+              <Button
+                variant={view === "calendar" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setView("calendar")}
+                className="gap-1"
+              >
+                <CalendarDays className="h-4 w-4" /> تقويم
+              </Button>
+            </div>
           </div>
         }
       />
