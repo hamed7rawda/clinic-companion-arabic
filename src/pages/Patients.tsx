@@ -165,12 +165,22 @@ const Patients = () => {
                     maxLength={20}
                   />
                 </div>
+                <div>
+                  <Label>الجنس</Label>
+                  <Select value={form.gender} onValueChange={(v) => setForm({ ...form, gender: v })}>
+                    <SelectTrigger><SelectValue placeholder="اختر الجنس" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">ذكر</SelectItem>
+                      <SelectItem value="female">أنثى</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="sm:col-span-2">
-                  <Label>معرف تيليجرام (Chat ID)</Label>
+                  <Label>العنوان</Label>
                   <Input
-                    value={form.chat_id}
-                    onChange={(e) => setForm({ ...form, chat_id: e.target.value })}
-                    maxLength={50}
+                    value={form.address}
+                    onChange={(e) => setForm({ ...form, address: e.target.value })}
+                    maxLength={200}
                   />
                 </div>
                 <div className="sm:col-span-2">
@@ -180,6 +190,16 @@ const Patients = () => {
                     onChange={(e) => setForm({ ...form, allergies: e.target.value })}
                     placeholder="مثال: بنسلين، سلفا"
                     maxLength={500}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <Label>التاريخ الطبي</Label>
+                  <Textarea
+                    value={form.medical_history}
+                    onChange={(e) => setForm({ ...form, medical_history: e.target.value })}
+                    placeholder="الأمراض المزمنة، العمليات السابقة، ..."
+                    maxLength={1000}
+                    rows={3}
                   />
                 </div>
               </div>
