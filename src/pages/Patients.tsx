@@ -41,6 +41,9 @@ interface Patient {
   age: number | null;
   phone: string | null;
   allergies: string | null;
+  address: string | null;
+  gender: string | null;
+  medical_history: string | null;
   register_date: string;
 }
 
@@ -48,7 +51,9 @@ const patientSchema = z.object({
   name: z.string().trim().min(2, "الاسم قصير جداً").max(100, "الاسم طويل"),
   age: z.coerce.number().int().min(0).max(130).optional().or(z.literal(NaN)),
   phone: z.string().trim().max(20).optional(),
-  chat_id: z.string().trim().max(50).optional(),
+  address: z.string().trim().max(200).optional(),
+  gender: z.string().trim().max(20).optional(),
+  medical_history: z.string().trim().max(1000).optional(),
   allergies: z.string().trim().max(500).optional(),
 });
 
