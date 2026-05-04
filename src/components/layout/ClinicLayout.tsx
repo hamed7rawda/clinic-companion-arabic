@@ -2,7 +2,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, CalendarDays, Users, ListOrdered, FileText,
   BarChart3, Settings as SettingsIcon, Activity, Stethoscope, Receipt,
-  TrendingUp, Webhook, LogOut, ChevronDown, Home,
+  TrendingUp, Webhook, LogOut, ChevronDown, Home, ShieldCheck,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
@@ -38,6 +38,7 @@ const recordsItems: NavEntry[] = [
 const systemItems: NavEntry[] = [
   { title: "مراقبة الأتمتة", url: "/automation", icon: Activity, roles: ["doctor"] },
   { title: "ربط n8n", url: "/webhooks", icon: Webhook, roles: ["doctor"] },
+  { title: "إدارة الصلاحيات", url: "/users", icon: ShieldCheck, roles: ["doctor"] },
   { title: "الإعدادات", url: "/settings", icon: SettingsIcon, roles: ["doctor"] },
 ];
 
