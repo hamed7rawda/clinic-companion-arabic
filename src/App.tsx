@@ -21,6 +21,7 @@ import Invoices from "./pages/Invoices";
 import Statistics from "./pages/Statistics";
 import Webhooks from "./pages/Webhooks";
 import PublicBooking from "./pages/PublicBooking";
+import UserRoles from "./pages/UserRoles";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const App = () => (
                 <Route path="/automation" element={<RoleRoute allow={["doctor"]}><Automation /></RoleRoute>} />
                 <Route path="/webhooks" element={<RoleRoute allow={["doctor"]}><Webhooks /></RoleRoute>} />
                 <Route path="/settings" element={<RoleRoute allow={["doctor"]}><Settings /></RoleRoute>} />
+                <Route path="/users" element={<RoleRoute allow={["doctor"]}><UserRoles /></RoleRoute>} />
               </Route>
             </Route>
             <Route path="*" element={<NotFound />} />
