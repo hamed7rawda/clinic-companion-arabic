@@ -17,27 +17,32 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
-const mainItems = [
+type AppRole = "doctor" | "nurse" | "reception";
+type NavEntry = { title: string; url: string; icon: typeof LayoutDashboard; roles?: AppRole[] };
+
+const mainItems: NavEntry[] = [
   { title: "القائمة الرئيسية", url: "/", icon: Home },
-  { title: "لوحة التحكم", url: "/dashboard", icon: LayoutDashboard },
-  { title: "المواعيد", url: "/appointments", icon: CalendarDays },
+  { title: "لوحة التحكم", url: "/dashboard", icon: LayoutDashboard, roles: ["doctor", "reception"] },
+  { title: "المواعيد", url: "/appointments", icon: CalendarDays, roles: ["doctor", "reception"] },
   { title: "المرضى", url: "/patients", icon: Users },
   { title: "قائمة الانتظار", url: "/queue", icon: ListOrdered },
 ];
 
-const recordsItems = [
-  { title: "السجلات الطبية", url: "/medical-history", icon: FileText },
-  
-  { title: "الفواتير", url: "/invoices", icon: Receipt },
-  { title: "التقارير", url: "/reports", icon: BarChart3 },
-  { title: "الإحصائيات", url: "/statistics", icon: TrendingUp },
+const recordsItems: NavEntry[] = [
+  { title: "السجلات الطبية", url: "/medical-history", icon: FileText, roles: ["doctor"] },
+  { title: "الفواتير", url: "/invoices", icon: Receipt, roles: ["doctor", "reception"] },
+  { title: "التقارير", url: "/reports", icon: BarChart3, roles: ["doctor"] },
+  { title: "الإحصائيات", url: "/statistics", icon: TrendingUp, roles: ["doctor"] },
 ];
 
-const systemItems = [
-  { title: "مراقبة الأتمتة", url: "/automation", icon: Activity },
-  { title: "ربط n8n", url: "/webhooks", icon: Webhook },
-  { title: "الإعدادات", url: "/settings", icon: SettingsIcon },
+const systemItems: NavEntry[] = [
+  { title: "مراقبة الأتمتة", url: "/automation", icon: Activity, roles: ["doctor"] },
+  { title: "ربط n8n", url: "/webhooks", icon: Webhook, roles: ["doctor"] },
+  { title: "الإعدادات", url: "/settings", icon: SettingsIcon, roles: ["doctor"] },
 ];
+
+const filterByRoles = (items: NavEntry[], roles: AppRole[]) =>
+  items.filter((it) => !it.roles || it.roles.some((r) => roles.includes(r)));
 
 function ClinicSidebar() {
   const { state, isMobile, setOpenMobile } = useSidebar();
