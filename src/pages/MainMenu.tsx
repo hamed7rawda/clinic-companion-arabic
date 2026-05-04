@@ -52,7 +52,7 @@ const MainMenu = () => {
   return (
     <div className="space-y-8">
       <PageHeader title="القائمة الرئيسية" description="اختر القسم الذي تريد الانتقال إليه" />
-      {groups.map((g) => (
+      {visible.map((g) => (
         <section key={g.label} className="space-y-3">
           <h2 className={cn("text-base font-bold", g.color)}>{g.label}</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
