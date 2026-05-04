@@ -100,18 +100,17 @@ function ClinicSidebar() {
   );
 }
 
-type NavItem = { title: string; url: string; icon: typeof LayoutDashboard };
-
 function CollapsibleNavGroup({
   label, labelColor, iconColor, items, renderItems, collapsed,
 }: {
   label: string;
   labelColor: string;
   iconColor: string;
-  items: NavItem[];
-  renderItems: (items: NavItem[], accent: string) => React.ReactNode;
+  items: NavEntry[];
+  renderItems: (items: NavEntry[], accent: string) => React.ReactNode;
   collapsed: boolean;
 }) {
+  if (items.length === 0) return null;
   if (collapsed) {
     return (
       <SidebarGroup>
