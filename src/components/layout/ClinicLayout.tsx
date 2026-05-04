@@ -2,7 +2,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, CalendarDays, Users, ListOrdered, FileText,
   BarChart3, Settings as SettingsIcon, Activity, Stethoscope, Receipt,
-  TrendingUp, Webhook, LogOut, ChevronDown, Home,
+  TrendingUp, Webhook, LogOut, ChevronDown, Home, ShieldCheck,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
@@ -17,38 +17,46 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
-const mainItems = [
+type AppRole = "doctor" | "nurse" | "reception";
+type NavEntry = { title: string; url: string; icon: typeof LayoutDashboard; roles?: AppRole[] };
+
+const mainItems: NavEntry[] = [
   { title: "القائمة الرئيسية", url: "/", icon: Home },
-  { title: "لوحة التحكم", url: "/dashboard", icon: LayoutDashboard },
-  { title: "المواعيد", url: "/appointments", icon: CalendarDays },
+  { title: "لوحة التحكم", url: "/dashboard", icon: LayoutDashboard, roles: ["doctor", "reception"] },
+  { title: "المواعيد", url: "/appointments", icon: CalendarDays, roles: ["doctor", "reception"] },
   { title: "المرضى", url: "/patients", icon: Users },
   { title: "قائمة الانتظار", url: "/queue", icon: ListOrdered },
 ];
 
-const recordsItems = [
-  { title: "السجلات الطبية", url: "/medical-history", icon: FileText },
-  
-  { title: "الفواتير", url: "/invoices", icon: Receipt },
-  { title: "التقارير", url: "/reports", icon: BarChart3 },
-  { title: "الإحصائيات", url: "/statistics", icon: TrendingUp },
+const recordsItems: NavEntry[] = [
+  { title: "السجلات الطبية", url: "/medical-history", icon: FileText, roles: ["doctor"] },
+  { title: "الفواتير", url: "/invoices", icon: Receipt, roles: ["doctor", "reception"] },
+  { title: "التقارير", url: "/reports", icon: BarChart3, roles: ["doctor"] },
+  { title: "الإحصائيات", url: "/statistics", icon: TrendingUp, roles: ["doctor"] },
 ];
 
-const systemItems = [
-  { title: "مراقبة الأتمتة", url: "/automation", icon: Activity },
-  { title: "ربط n8n", url: "/webhooks", icon: Webhook },
-  { title: "الإعدادات", url: "/settings", icon: SettingsIcon },
+const systemItems: NavEntry[] = [
+  { title: "مراقبة الأتمتة", url: "/automation", icon: Activity, roles: ["doctor"] },
+  { title: "ربط n8n", url: "/webhooks", icon: Webhook, roles: ["doctor"] },
+  { title: "إدارة الصلاحيات", url: "/users", icon: ShieldCheck, roles: ["doctor"] },
+  { title: "الإعدادات", url: "/settings", icon: SettingsIcon, roles: ["doctor"] },
 ];
+
+const filterByRoles = (items: NavEntry[], roles: AppRole[]) =>
+  items.filter((it) => !it.roles || it.roles.some((r) => roles.includes(r)));
 
 function ClinicSidebar() {
   const { state, isMobile, setOpenMobile } = useSidebar();
   const collapsed = state === "collapsed";
   const location = useLocation();
+  const { roles } = useAuth();
+  const effectiveRoles: AppRole[] = (roles.length ? roles : ["reception"]) as AppRole[];
 
   const handleNavClick = () => {
     if (isMobile) setOpenMobile(false);
   };
 
-  const renderItems = (items: typeof mainItems, accent: string) =>
+  const renderItems = (items: NavEntry[], accent: string) =>
     items.map((item) => {
       const isActive = item.url === "/"
         ? location.pathname === "/"
@@ -85,15 +93,13 @@ function ClinicSidebar() {
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <CollapsibleNavGroup label="الإدارة اليومية" labelColor="text-sky-200/90" iconColor="text-sky-300/90" items={mainItems} renderItems={renderItems} collapsed={collapsed} />
-        <CollapsibleNavGroup label="السجلات والمالية" labelColor="text-emerald-200/90" iconColor="text-emerald-300/90" items={recordsItems} renderItems={renderItems} collapsed={collapsed} />
-        <CollapsibleNavGroup label="النظام" labelColor="text-amber-200/90" iconColor="text-amber-300/90" items={systemItems} renderItems={renderItems} collapsed={collapsed} />
+        <CollapsibleNavGroup label="الإدارة اليومية" labelColor="text-sky-200/90" iconColor="text-sky-300/90" items={filterByRoles(mainItems, effectiveRoles)} renderItems={renderItems} collapsed={collapsed} />
+        <CollapsibleNavGroup label="السجلات والمالية" labelColor="text-emerald-200/90" iconColor="text-emerald-300/90" items={filterByRoles(recordsItems, effectiveRoles)} renderItems={renderItems} collapsed={collapsed} />
+        <CollapsibleNavGroup label="النظام" labelColor="text-amber-200/90" iconColor="text-amber-300/90" items={filterByRoles(systemItems, effectiveRoles)} renderItems={renderItems} collapsed={collapsed} />
       </SidebarContent>
     </Sidebar>
   );
 }
-
-type NavItem = { title: string; url: string; icon: typeof LayoutDashboard };
 
 function CollapsibleNavGroup({
   label, labelColor, iconColor, items, renderItems, collapsed,
@@ -101,10 +107,11 @@ function CollapsibleNavGroup({
   label: string;
   labelColor: string;
   iconColor: string;
-  items: NavItem[];
-  renderItems: (items: NavItem[], accent: string) => React.ReactNode;
+  items: NavEntry[];
+  renderItems: (items: NavEntry[], accent: string) => React.ReactNode;
   collapsed: boolean;
 }) {
+  if (items.length === 0) return null;
   if (collapsed) {
     return (
       <SidebarGroup>

@@ -3,19 +3,21 @@ import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/PageHeader";
 import {
   LayoutDashboard, CalendarDays, Users, ListOrdered, FileText,
-  Receipt, BarChart3, TrendingUp, Activity, Webhook, Settings as SettingsIcon,
+  Receipt, BarChart3, TrendingUp, Activity, Webhook, Settings as SettingsIcon, ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
-type MenuItem = { title: string; url: string; icon: any; desc: string };
+type AppRole = "doctor" | "nurse" | "reception";
+type MenuItem = { title: string; url: string; icon: any; desc: string; roles?: AppRole[] };
 
 const groups: { label: string; color: string; items: MenuItem[] }[] = [
   {
     label: "الإدارة اليومية",
     color: "text-sky-500",
     items: [
-      { title: "لوحة التحكم", url: "/dashboard", icon: LayoutDashboard, desc: "نظرة لحظية على نشاط العيادة" },
-      { title: "المواعيد", url: "/appointments", icon: CalendarDays, desc: "حجز ومتابعة المواعيد" },
+      { title: "لوحة التحكم", url: "/dashboard", icon: LayoutDashboard, desc: "نظرة لحظية على نشاط العيادة", roles: ["doctor", "reception"] },
+      { title: "المواعيد", url: "/appointments", icon: CalendarDays, desc: "حجز ومتابعة المواعيد", roles: ["doctor", "reception"] },
       { title: "المرضى", url: "/patients", icon: Users, desc: "ملفات المرضى وبياناتهم" },
       { title: "قائمة الانتظار", url: "/queue", icon: ListOrdered, desc: "إدارة طابور المراجعة" },
     ],
@@ -24,28 +26,34 @@ const groups: { label: string; color: string; items: MenuItem[] }[] = [
     label: "السجلات والمالية",
     color: "text-emerald-500",
     items: [
-      { title: "السجلات الطبية", url: "/medical-history", icon: FileText, desc: "تاريخ الزيارات والتشخيصات" },
-      { title: "الفواتير", url: "/invoices", icon: Receipt, desc: "إصدار وإدارة الفواتير" },
-      { title: "التقارير", url: "/reports", icon: BarChart3, desc: "تقارير الأداء والإيرادات" },
-      { title: "الإحصائيات", url: "/statistics", icon: TrendingUp, desc: "مؤشرات وتحليلات" },
+      { title: "السجلات الطبية", url: "/medical-history", icon: FileText, desc: "تاريخ الزيارات والتشخيصات", roles: ["doctor"] },
+      { title: "الفواتير", url: "/invoices", icon: Receipt, desc: "إصدار وإدارة الفواتير", roles: ["doctor", "reception"] },
+      { title: "التقارير", url: "/reports", icon: BarChart3, desc: "تقارير الأداء والإيرادات", roles: ["doctor"] },
+      { title: "الإحصائيات", url: "/statistics", icon: TrendingUp, desc: "مؤشرات وتحليلات", roles: ["doctor"] },
     ],
   },
   {
     label: "النظام",
     color: "text-amber-500",
     items: [
-      { title: "مراقبة الأتمتة", url: "/automation", icon: Activity, desc: "حالة سير العمل التلقائي" },
-      { title: "ربط n8n", url: "/webhooks", icon: Webhook, desc: "تكاملات الويبهوك" },
-      { title: "الإعدادات", url: "/settings", icon: SettingsIcon, desc: "إعدادات العيادة العامة" },
+      { title: "مراقبة الأتمتة", url: "/automation", icon: Activity, desc: "حالة سير العمل التلقائي", roles: ["doctor"] },
+      { title: "ربط n8n", url: "/webhooks", icon: Webhook, desc: "تكاملات الويبهوك", roles: ["doctor"] },
+      { title: "إدارة الصلاحيات", url: "/users", icon: ShieldCheck, desc: "تعيين أدوار المستخدمين", roles: ["doctor"] },
+      { title: "الإعدادات", url: "/settings", icon: SettingsIcon, desc: "إعدادات العيادة العامة", roles: ["doctor"] },
     ],
   },
 ];
 
 const MainMenu = () => {
+  const { roles } = useAuth();
+  const effective = (roles.length ? roles : ["reception"]) as AppRole[];
+  const visible = groups
+    .map((g) => ({ ...g, items: g.items.filter((it) => !it.roles || it.roles.some((r) => effective.includes(r))) }))
+    .filter((g) => g.items.length > 0);
   return (
     <div className="space-y-8">
       <PageHeader title="القائمة الرئيسية" description="اختر القسم الذي تريد الانتقال إليه" />
-      {groups.map((g) => (
+      {visible.map((g) => (
         <section key={g.label} className="space-y-3">
           <h2 className={cn("text-base font-bold", g.color)}>{g.label}</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
