@@ -19,6 +19,7 @@ import Automation from "./pages/Automation";
 import Invoices from "./pages/Invoices";
 import Statistics from "./pages/Statistics";
 import Webhooks from "./pages/Webhooks";
+import PublicBooking from "./pages/PublicBooking";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/auth" element={<Auth />} />
+            <Route path="/book" element={<PublicBooking />} />
             <Route element={<ProtectedRoute />}>
               <Route element={<ClinicLayout />}>
                 <Route path="/" element={<MainMenu />} />
