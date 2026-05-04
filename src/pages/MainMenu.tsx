@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/PageHeader";
 import {
   LayoutDashboard, CalendarDays, Users, ListOrdered, FileText,
-  Receipt, BarChart3, TrendingUp, Activity, Webhook, Settings as SettingsIcon,
+  Receipt, BarChart3, TrendingUp, Activity, Webhook, Settings as SettingsIcon, ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
@@ -38,6 +38,7 @@ const groups: { label: string; color: string; items: MenuItem[] }[] = [
     items: [
       { title: "مراقبة الأتمتة", url: "/automation", icon: Activity, desc: "حالة سير العمل التلقائي", roles: ["doctor"] },
       { title: "ربط n8n", url: "/webhooks", icon: Webhook, desc: "تكاملات الويبهوك", roles: ["doctor"] },
+      { title: "إدارة الصلاحيات", url: "/users", icon: ShieldCheck, desc: "تعيين أدوار المستخدمين", roles: ["doctor"] },
       { title: "الإعدادات", url: "/settings", icon: SettingsIcon, desc: "إعدادات العيادة العامة", roles: ["doctor"] },
     ],
   },
