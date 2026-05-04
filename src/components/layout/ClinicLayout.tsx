@@ -92,9 +92,9 @@ function ClinicSidebar() {
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <CollapsibleNavGroup label="الإدارة اليومية" labelColor="text-sky-200/90" iconColor="text-sky-300/90" items={mainItems} renderItems={renderItems} collapsed={collapsed} />
-        <CollapsibleNavGroup label="السجلات والمالية" labelColor="text-emerald-200/90" iconColor="text-emerald-300/90" items={recordsItems} renderItems={renderItems} collapsed={collapsed} />
-        <CollapsibleNavGroup label="النظام" labelColor="text-amber-200/90" iconColor="text-amber-300/90" items={systemItems} renderItems={renderItems} collapsed={collapsed} />
+        <CollapsibleNavGroup label="الإدارة اليومية" labelColor="text-sky-200/90" iconColor="text-sky-300/90" items={filterByRoles(mainItems, effectiveRoles)} renderItems={renderItems} collapsed={collapsed} />
+        <CollapsibleNavGroup label="السجلات والمالية" labelColor="text-emerald-200/90" iconColor="text-emerald-300/90" items={filterByRoles(recordsItems, effectiveRoles)} renderItems={renderItems} collapsed={collapsed} />
+        <CollapsibleNavGroup label="النظام" labelColor="text-amber-200/90" iconColor="text-amber-300/90" items={filterByRoles(systemItems, effectiveRoles)} renderItems={renderItems} collapsed={collapsed} />
       </SidebarContent>
     </Sidebar>
   );
