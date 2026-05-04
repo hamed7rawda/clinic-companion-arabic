@@ -48,12 +48,14 @@ function ClinicSidebar() {
   const { state, isMobile, setOpenMobile } = useSidebar();
   const collapsed = state === "collapsed";
   const location = useLocation();
+  const { roles } = useAuth();
+  const effectiveRoles: AppRole[] = (roles.length ? roles : ["reception"]) as AppRole[];
 
   const handleNavClick = () => {
     if (isMobile) setOpenMobile(false);
   };
 
-  const renderItems = (items: typeof mainItems, accent: string) =>
+  const renderItems = (items: NavEntry[], accent: string) =>
     items.map((item) => {
       const isActive = item.url === "/"
         ? location.pathname === "/"
