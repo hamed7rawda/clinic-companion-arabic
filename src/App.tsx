@@ -38,17 +38,17 @@ const App = () => (
             <Route element={<ProtectedRoute />}>
               <Route element={<ClinicLayout />}>
                 <Route path="/" element={<MainMenu />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/appointments" element={<Appointments />} />
+                <Route path="/dashboard" element={<RoleRoute allow={["doctor", "reception"]}><Dashboard /></RoleRoute>} />
+                <Route path="/appointments" element={<RoleRoute allow={["doctor", "reception"]}><Appointments /></RoleRoute>} />
                 <Route path="/patients" element={<Patients />} />
                 <Route path="/queue" element={<Queue />} />
-                <Route path="/medical-history" element={<MedicalHistory />} />
-                <Route path="/invoices" element={<Invoices />} />
-                <Route path="/reports" element={<Reports />} />
-                <Route path="/statistics" element={<Statistics />} />
-                <Route path="/automation" element={<Automation />} />
-                <Route path="/webhooks" element={<Webhooks />} />
-                <Route path="/settings" element={<Settings />} />
+                <Route path="/medical-history" element={<RoleRoute allow={["doctor"]}><MedicalHistory /></RoleRoute>} />
+                <Route path="/invoices" element={<RoleRoute allow={["doctor", "reception"]}><Invoices /></RoleRoute>} />
+                <Route path="/reports" element={<RoleRoute allow={["doctor"]}><Reports /></RoleRoute>} />
+                <Route path="/statistics" element={<RoleRoute allow={["doctor"]}><Statistics /></RoleRoute>} />
+                <Route path="/automation" element={<RoleRoute allow={["doctor"]}><Automation /></RoleRoute>} />
+                <Route path="/webhooks" element={<RoleRoute allow={["doctor"]}><Webhooks /></RoleRoute>} />
+                <Route path="/settings" element={<RoleRoute allow={["doctor"]}><Settings /></RoleRoute>} />
               </Route>
             </Route>
             <Route path="*" element={<NotFound />} />
