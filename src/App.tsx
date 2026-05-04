@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ClinicLayout } from "./components/layout/ClinicLayout";
 import { AuthProvider } from "./hooks/useAuth";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import { RoleRoute } from "./components/auth/RoleRoute";
 import Auth from "./pages/Auth";
 import MainMenu from "./pages/MainMenu";
 import Dashboard from "./pages/Dashboard";
