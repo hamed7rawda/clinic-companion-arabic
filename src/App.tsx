@@ -21,7 +21,11 @@ import Invoices from "./pages/Invoices";
 import Statistics from "./pages/Statistics";
 import Webhooks from "./pages/Webhooks";
 import PublicBooking from "./pages/PublicBooking";
+import PublicRecords from "./pages/PublicRecords";
 import UserRoles from "./pages/UserRoles";
+import PatientSession from "./pages/PatientSession";
+import NurseCheckIn from "./pages/NurseCheckIn";
+import NurseVitals from "./pages/NurseVitals";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -36,14 +40,18 @@ const App = () => (
           <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/book" element={<PublicBooking />} />
+            <Route path="/my-records" element={<PublicRecords />} />
             <Route element={<ProtectedRoute />}>
               <Route element={<ClinicLayout />}>
                 <Route path="/" element={<MainMenu />} />
                 <Route path="/dashboard" element={<RoleRoute allow={["doctor", "reception"]}><Dashboard /></RoleRoute>} />
                 <Route path="/appointments" element={<RoleRoute allow={["doctor", "reception"]}><Appointments /></RoleRoute>} />
-                <Route path="/patients" element={<Patients />} />
-                <Route path="/queue" element={<Queue />} />
+                <Route path="/patients" element={<RoleRoute allow={["doctor", "nurse", "reception"]}><Patients /></RoleRoute>} />
+                <Route path="/queue" element={<RoleRoute allow={["doctor", "nurse", "reception"]}><Queue /></RoleRoute>} />
+                <Route path="/check-in" element={<RoleRoute allow={["nurse", "doctor"]}><NurseCheckIn /></RoleRoute>} />
+                <Route path="/vitals" element={<RoleRoute allow={["nurse", "doctor"]}><NurseVitals /></RoleRoute>} />
                 <Route path="/medical-history" element={<RoleRoute allow={["doctor"]}><MedicalHistory /></RoleRoute>} />
+                <Route path="/patient/:id" element={<RoleRoute allow={["doctor"]}><PatientSession /></RoleRoute>} />
                 <Route path="/invoices" element={<RoleRoute allow={["doctor", "reception"]}><Invoices /></RoleRoute>} />
                 <Route path="/reports" element={<RoleRoute allow={["doctor"]}><Reports /></RoleRoute>} />
                 <Route path="/statistics" element={<RoleRoute allow={["doctor"]}><Statistics /></RoleRoute>} />
