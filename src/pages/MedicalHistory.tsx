@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table";
 import { Search } from "lucide-react";
 import { formatDate } from "@/lib/clinic-utils";
+import { ConsultationRecorder } from "@/components/medical/ConsultationRecorder";
 
 interface Visit {
   id: string;
@@ -49,6 +50,8 @@ const MedicalHistory = () => {
         title="السجلات الطبية"
         description="جميع زيارات المرضى وتشخيصاتهم"
       />
+
+      <ConsultationRecorder />
 
       <Card className="p-4 shadow-card border-0 grid gap-3 sm:grid-cols-2">
         <Input
