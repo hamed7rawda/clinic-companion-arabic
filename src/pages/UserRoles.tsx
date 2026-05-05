@@ -70,6 +70,7 @@ export default function UserRoles() {
                   <SelectItem value="doctor">دكتور</SelectItem>
                   <SelectItem value="nurse">ممرض</SelectItem>
                   <SelectItem value="reception">استقبال</SelectItem>
+                  <SelectItem value="patient">مريض</SelectItem>
                 </SelectContent>
               </Select>
             </div>
