@@ -142,6 +142,60 @@ export type Database = {
         }
         Relationships: []
       }
+      consultations: {
+        Row: {
+          approved_at: string | null
+          audio_duration: number | null
+          created_at: string
+          created_by: string | null
+          diagnosis: string | null
+          id: string
+          labs: Json
+          medications: Json
+          patient_id: string | null
+          patient_name: string
+          patient_phone: string | null
+          recommendations: string | null
+          status: string
+          transcript: string | null
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          audio_duration?: number | null
+          created_at?: string
+          created_by?: string | null
+          diagnosis?: string | null
+          id?: string
+          labs?: Json
+          medications?: Json
+          patient_id?: string | null
+          patient_name: string
+          patient_phone?: string | null
+          recommendations?: string | null
+          status?: string
+          transcript?: string | null
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          audio_duration?: number | null
+          created_at?: string
+          created_by?: string | null
+          diagnosis?: string | null
+          id?: string
+          labs?: Json
+          medications?: Json
+          patient_id?: string | null
+          patient_name?: string
+          patient_phone?: string | null
+          recommendations?: string | null
+          status?: string
+          transcript?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       invoice_items: {
         Row: {
           created_at: string
@@ -584,6 +638,20 @@ export type Database = {
     }
     Functions: {
       generate_invoice_number: { Args: never; Returns: string }
+      get_patient_records: {
+        Args: { _phone: string }
+        Returns: {
+          date: string
+          diagnosis: string
+          id: string
+          kind: string
+          labs: Json
+          medications: Json
+          patient_name: string
+          recommendations: string
+          status: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -594,7 +662,7 @@ export type Database = {
       is_authenticated: { Args: never; Returns: boolean }
     }
     Enums: {
-      app_role: "doctor" | "nurse" | "reception"
+      app_role: "doctor" | "nurse" | "reception" | "patient"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -722,7 +790,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["doctor", "nurse", "reception"],
+      app_role: ["doctor", "nurse", "reception", "patient"],
     },
   },
 } as const
