@@ -2,3 +2,9 @@ project_id = "djxsbyyqyaogedlzkgdr"
 
 [functions.public-booking]
 verify_jwt = false
+
+[functions.generate-prescription-draft]
+verify_jwt = false
+
+[functions.public-records]
+verify_jwt = false

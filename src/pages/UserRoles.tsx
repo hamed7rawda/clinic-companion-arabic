@@ -9,8 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Navigate } from "react-router-dom";
 
-type AppRole = "doctor" | "nurse" | "reception";
-const ROLE_LABEL: Record<AppRole, string> = { doctor: "دكتور", nurse: "ممرض", reception: "استقبال" };
+type AppRole = "doctor" | "nurse" | "reception" | "patient";
+const ROLE_LABEL: Record<AppRole, string> = { doctor: "دكتور", nurse: "ممرض", reception: "استقبال", patient: "مريض" };
 
 interface Row { user_id: string; email: string | null; display_name: string | null; roles: AppRole[]; }
 
@@ -70,6 +70,7 @@ export default function UserRoles() {
                   <SelectItem value="doctor">دكتور</SelectItem>
                   <SelectItem value="nurse">ممرض</SelectItem>
                   <SelectItem value="reception">استقبال</SelectItem>
+                  <SelectItem value="patient">مريض</SelectItem>
                 </SelectContent>
               </Select>
             </div>

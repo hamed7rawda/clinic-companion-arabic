@@ -2,30 +2,30 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, CalendarDays, Users, ListOrdered, FileText,
   BarChart3, Settings as SettingsIcon, Activity, Stethoscope, Receipt,
-  TrendingUp, Webhook, LogOut, ChevronDown, Home, ShieldCheck,
+  TrendingUp, Webhook, LogOut, Home, ShieldCheck, UserCheck, Pill, FlaskConical,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider,
   SidebarTrigger, useSidebar,
 } from "@/components/ui/sidebar";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth, AppRole } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { RoleSwitcher } from "@/components/auth/RoleSwitcher";
 
-type AppRole = "doctor" | "nurse" | "reception";
-type NavEntry = { title: string; url: string; icon: typeof LayoutDashboard; roles?: AppRole[] };
+type NavEntry = { title: string; url: string; icon: typeof LayoutDashboard; roles?: AppRole[]; external?: boolean };
 
 const mainItems: NavEntry[] = [
   { title: "القائمة الرئيسية", url: "/", icon: Home },
   { title: "لوحة التحكم", url: "/dashboard", icon: LayoutDashboard, roles: ["doctor", "reception"] },
   { title: "المواعيد", url: "/appointments", icon: CalendarDays, roles: ["doctor", "reception"] },
-  { title: "المرضى", url: "/patients", icon: Users },
-  { title: "قائمة الانتظار", url: "/queue", icon: ListOrdered },
+  { title: "المرضى", url: "/patients", icon: Users, roles: ["doctor", "nurse", "reception"] },
+  { title: "قائمة الانتظار", url: "/queue", icon: ListOrdered, roles: ["doctor", "nurse", "reception"] },
+  { title: "تسجيل الدخول", url: "/check-in", icon: UserCheck, roles: ["nurse", "doctor"] },
+  { title: "العلامات الحيوية", url: "/vitals", icon: Activity, roles: ["nurse", "doctor"] },
 ];
 
 const recordsItems: NavEntry[] = [
@@ -42,6 +42,11 @@ const systemItems: NavEntry[] = [
   { title: "الإعدادات", url: "/settings", icon: SettingsIcon, roles: ["doctor"] },
 ];
 
+const patientItems: NavEntry[] = [
+  { title: "وصفاتي", url: "/my-records", icon: Pill, roles: ["patient"], external: true },
+  { title: "تحاليلي", url: "/my-records", icon: FlaskConical, roles: ["patient"], external: true },
+];
+
 const filterByRoles = (items: NavEntry[], roles: AppRole[]) =>
   items.filter((it) => !it.roles || it.roles.some((r) => roles.includes(r)));
 
@@ -49,20 +54,16 @@ function ClinicSidebar() {
   const { state, isMobile, setOpenMobile } = useSidebar();
   const collapsed = state === "collapsed";
   const location = useLocation();
-  const { roles } = useAuth();
-  const effectiveRoles: AppRole[] = (roles.length ? roles : ["reception"]) as AppRole[];
+  const { activeRole } = useAuth();
+  const effectiveRoles: AppRole[] = [activeRole];
 
-  const handleNavClick = () => {
-    if (isMobile) setOpenMobile(false);
-  };
+  const handleNavClick = () => { if (isMobile) setOpenMobile(false); };
 
   const renderItems = (items: NavEntry[], accent: string) =>
     items.map((item) => {
-      const isActive = item.url === "/"
-        ? location.pathname === "/"
-        : location.pathname.startsWith(item.url);
+      const isActive = item.url === "/" ? location.pathname === "/" : location.pathname.startsWith(item.url);
       return (
-        <SidebarMenuItem key={item.url}>
+        <SidebarMenuItem key={item.title + item.url}>
           <SidebarMenuButton asChild tooltip={item.title}>
             <NavLink to={item.url} end={item.url === "/"} onClick={handleNavClick}
               className={cn("transition-smooth rounded-md",
@@ -76,6 +77,8 @@ function ClinicSidebar() {
         </SidebarMenuItem>
       );
     });
+
+  const isPatient = activeRole === "patient";
 
   return (
     <Sidebar collapsible="icon" side="right">
@@ -93,33 +96,35 @@ function ClinicSidebar() {
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <CollapsibleNavGroup label="الإدارة اليومية" labelColor="text-sky-200/90" iconColor="text-sky-300/90" items={filterByRoles(mainItems, effectiveRoles)} renderItems={renderItems} collapsed={collapsed} />
-        <CollapsibleNavGroup label="السجلات والمالية" labelColor="text-emerald-200/90" iconColor="text-emerald-300/90" items={filterByRoles(recordsItems, effectiveRoles)} renderItems={renderItems} collapsed={collapsed} />
-        <CollapsibleNavGroup label="النظام" labelColor="text-amber-200/90" iconColor="text-amber-300/90" items={filterByRoles(systemItems, effectiveRoles)} renderItems={renderItems} collapsed={collapsed} />
+        {isPatient ? (
+          <Group label="بوابة المريض" labelColor="text-violet-200/90" iconColor="text-violet-300/90"
+            items={[{ title: "القائمة الرئيسية", url: "/", icon: Home }, ...patientItems]}
+            renderItems={renderItems} collapsed={collapsed} />
+        ) : (
+          <>
+            <Group label="الإدارة اليومية" labelColor="text-sky-200/90" iconColor="text-sky-300/90"
+              items={filterByRoles(mainItems, effectiveRoles)} renderItems={renderItems} collapsed={collapsed} />
+            <Group label="السجلات والمالية" labelColor="text-emerald-200/90" iconColor="text-emerald-300/90"
+              items={filterByRoles(recordsItems, effectiveRoles)} renderItems={renderItems} collapsed={collapsed} />
+            <Group label="النظام" labelColor="text-amber-200/90" iconColor="text-amber-300/90"
+              items={filterByRoles(systemItems, effectiveRoles)} renderItems={renderItems} collapsed={collapsed} />
+          </>
+        )}
       </SidebarContent>
     </Sidebar>
   );
 }
 
-function CollapsibleNavGroup({
+function Group({
   label, labelColor, iconColor, items, renderItems, collapsed,
 }: {
-  label: string;
-  labelColor: string;
-  iconColor: string;
-  items: NavEntry[];
-  renderItems: (items: NavEntry[], accent: string) => React.ReactNode;
-  collapsed: boolean;
+  label: string; labelColor: string; iconColor: string; items: NavEntry[];
+  renderItems: (items: NavEntry[], accent: string) => React.ReactNode; collapsed: boolean;
 }) {
   if (items.length === 0) return null;
   if (collapsed) {
-    return (
-      <SidebarGroup>
-        <SidebarGroupContent><SidebarMenu>{renderItems(items, iconColor)}</SidebarMenu></SidebarGroupContent>
-      </SidebarGroup>
-    );
+    return <SidebarGroup><SidebarGroupContent><SidebarMenu>{renderItems(items, iconColor)}</SidebarMenu></SidebarGroupContent></SidebarGroup>;
   }
-
   return (
     <SidebarGroup>
       <SidebarGroupLabel className={cn("font-bold uppercase tracking-wide text-xs", labelColor)}>{label}</SidebarGroupLabel>
@@ -129,11 +134,11 @@ function CollapsibleNavGroup({
 }
 
 const ROLE_LABEL: Record<string, string> = {
-  doctor: "دكتور", nurse: "ممرض", reception: "استقبال",
+  doctor: "دكتور", nurse: "ممرض", reception: "استقبال", patient: "مريض",
 };
 
 export function ClinicLayout() {
-  const { user, roles, signOut } = useAuth();
+  const { user, activeRole, signOut } = useAuth();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -146,25 +151,17 @@ export function ClinicLayout() {
     <SidebarProvider defaultOpen>
       <div dir="rtl" className="flex min-h-screen w-full bg-background font-sans">
         <ClinicSidebar />
-        <div className="flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col min-w-0">
           <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-card/80 px-4 backdrop-blur">
             <SidebarTrigger />
-            <div className="flex items-center gap-2 text-sm">
+            <div className="hidden md:flex items-center gap-2 text-sm">
               <span className="flex h-2 w-2 rounded-full bg-success live-dot" />
               <span className="text-muted-foreground">النظام نشط</span>
             </div>
             <div className="ms-auto flex items-center gap-3">
-              <span className="hidden md:inline text-xs text-muted-foreground">
-                {new Date().toLocaleDateString("ar-EG", { weekday: "long", day: "numeric", month: "long" })}
-              </span>
-              {roles.length > 0 && (
-                <div className="flex gap-1">
-                  {roles.map((r) => (
-                    <Badge key={r} variant="secondary" className="text-xs">{ROLE_LABEL[r] ?? r}</Badge>
-                  ))}
-                </div>
-              )}
-              <span className="hidden sm:inline text-xs text-muted-foreground truncate max-w-[160px]">
+              <RoleSwitcher />
+              <Badge variant="secondary" className="text-xs">{ROLE_LABEL[activeRole]}</Badge>
+              <span className="hidden sm:inline text-xs text-muted-foreground truncate max-w-[140px]">
                 {user?.email}
               </span>
               <Button variant="ghost" size="icon" onClick={handleSignOut} title="تسجيل الخروج">
