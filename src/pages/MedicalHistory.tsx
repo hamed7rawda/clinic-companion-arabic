@@ -51,6 +51,8 @@ const MedicalHistory = () => {
         description="جميع زيارات المرضى وتشخيصاتهم"
       />
 
+      <ConsultationRecorder />
+
       <Card className="p-4 shadow-card border-0 grid gap-3 sm:grid-cols-2">
         <Input
           startIcon={<Search className="h-4 w-4" />}
