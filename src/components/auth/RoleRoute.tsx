@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 import { ReactNode } from "react";
 
-type AppRole = "doctor" | "nurse" | "reception";
+type AppRole = "doctor" | "nurse" | "reception" | "patient";
 
 export function RoleRoute({ allow, children }: { allow: AppRole[]; children: ReactNode }) {
   const { roles, loading } = useAuth();
