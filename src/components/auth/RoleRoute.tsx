@@ -14,7 +14,7 @@ export function RoleRoute({ allow, children }: { allow: AppRole[]; children: Rea
       </div>
     );
   }
-  const effective = (roles.length ? roles : ["reception"]) as AppRole[];
+  const effective = (roles.length ? roles : ["doctor"]) as AppRole[];
   if (!effective.some((r) => allow.includes(r))) {
     return <Navigate to="/" replace />;
   }
