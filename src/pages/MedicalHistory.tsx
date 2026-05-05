@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table";
 import { Search } from "lucide-react";
 import { formatDate } from "@/lib/clinic-utils";
+import { ConsultationRecorder } from "@/components/medical/ConsultationRecorder";
 
 interface Visit {
   id: string;
