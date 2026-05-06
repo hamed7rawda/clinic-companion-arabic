@@ -42,18 +42,19 @@ import {
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { RatingStars } from "@/components/shared/RatingStars";
 import { Textarea } from "@/components/ui/textarea";
-import { CheckCircle2, X, RefreshCw, CalendarDays, List, Plus } from "lucide-react";
+import { CheckCircle2, X, RefreshCw, CalendarDays, List, Plus, LogIn } from "lucide-react";
 import { toast } from "sonner";
 import { formatDate, formatTime, logActivity } from "@/lib/clinic-utils";
 import { ar } from "date-fns/locale";
 
 interface Appointment {
   id: string;
+  patient_id: string | null;
   patient_name: string;
   date: string;
   time: string;
   complaint: string | null;
-  status: "booked" | "completed" | "cancelled" | "rescheduled";
+  status: "booked" | "completed" | "cancelled" | "rescheduled" | "checked_in";
   rating: number | null;
 }
 
@@ -129,6 +130,17 @@ const Appointments = () => {
     };
     await logActivity(supabase, `appointment_${status}`, `تم ${labels[status]} موعد ${name}`);
     toast.success("تم تحديث الموعد");
+  };
+
+  const checkIn = async (a: Appointment) => {
+    const { error: qErr } = await supabase.from("queue").insert({
+      patient_id: a.patient_id, patient_name: a.patient_name,
+      position: Date.now() % 1000, status: "waiting",
+    });
+    if (qErr) { toast.error("فشل تسجيل الدخول: " + qErr.message); return; }
+    await supabase.from("appointments").update({ status: "checked_in" }).eq("id", a.id);
+    await logActivity(supabase, "patient_checked_in", `تم تسجيل دخول ${a.patient_name} لطابور الانتظار`);
+    toast.success(`تم تسجيل دخول ${a.patient_name}`);
   };
 
   const openReschedule = (a: Appointment) => {
