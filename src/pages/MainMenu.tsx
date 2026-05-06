@@ -17,18 +17,15 @@ const groups: { label: string; color: string; items: MenuItem[] }[] = [
     color: "text-sky-500",
     items: [
       { title: "لوحة التحكم", url: "/dashboard", icon: LayoutDashboard, desc: "نظرة لحظية على نشاط العيادة", roles: ["doctor", "reception"] },
-      { title: "المواعيد", url: "/appointments", icon: CalendarDays, desc: "حجز ومتابعة المواعيد", roles: ["doctor", "reception"] },
-      { title: "المرضى", url: "/patients", icon: Users, desc: "ملفات المرضى وبياناتهم", roles: ["doctor", "nurse", "reception"] },
+      { title: "المواعيد", url: "/appointments", icon: CalendarDays, desc: "حجز ومتابعة وتسجيل دخول المرضى", roles: ["doctor", "reception", "nurse"] },
+      { title: "المرضى", url: "/patients", icon: Users, desc: "ملفات المرضى وسجلاتهم الطبية", roles: ["doctor", "nurse", "reception"] },
       { title: "قائمة الانتظار", url: "/queue", icon: ListOrdered, desc: "إدارة طابور المراجعة", roles: ["doctor", "nurse", "reception"] },
-      { title: "تسجيل دخول المرضى", url: "/check-in", icon: UserCheck, desc: "إدخال المرضى لطابور اليوم", roles: ["nurse", "doctor"] },
-      { title: "العلامات الحيوية", url: "/vitals", icon: Activity, desc: "تسجيل قياسات المريض", roles: ["nurse", "doctor"] },
     ],
   },
   {
     label: "السجلات والمالية",
     color: "text-emerald-500",
     items: [
-      { title: "السجلات الطبية", url: "/medical-history", icon: FileText, desc: "تاريخ الزيارات والجلسات", roles: ["doctor"] },
       { title: "الفواتير", url: "/invoices", icon: Receipt, desc: "إصدار وإدارة الفواتير", roles: ["doctor", "reception"] },
       { title: "التقارير", url: "/reports", icon: BarChart3, desc: "تقارير الأداء والإيرادات", roles: ["doctor"] },
       { title: "الإحصائيات", url: "/statistics", icon: TrendingUp, desc: "مؤشرات وتحليلات", roles: ["doctor"] },
