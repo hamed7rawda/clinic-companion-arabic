@@ -48,7 +48,7 @@ const PatientSession = () => {
   useEffect(() => {
     if (!id) return;
     supabase.from("patients").select("*").eq("id", id).maybeSingle().then(({ data }) => {
-      if (!data) { toast.error("المريض غير موجود"); navigate("/medical-history"); return; }
+      if (!data) { toast.error("المريض غير موجود"); navigate("/patients"); return; }
       setPatient(data as any);
     });
     supabase.from("medical_history").select("*").eq("patient_id", id).order("visit_date", { ascending: false })
