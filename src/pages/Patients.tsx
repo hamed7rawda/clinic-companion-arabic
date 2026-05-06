@@ -228,7 +228,7 @@ const Patients = () => {
             <Card
               key={p.id}
               onClick={() => openPatient(p)}
-              className="p-4 shadow-card hover:shadow-elevated transition-smooth cursor-pointer border-0"
+              className="p-4 shadow-card hover:shadow-elevated transition-smooth cursor-pointer border-0 group"
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-3 min-w-0">
@@ -242,6 +242,7 @@ const Patients = () => {
                     </p>
                   </div>
                 </div>
+                <Mic className="h-4 w-4 text-primary opacity-0 group-hover:opacity-100 transition-smooth" />
               </div>
               <div className="mt-3 space-y-1.5 text-xs">
                 {p.phone && (
@@ -262,82 +263,6 @@ const Patients = () => {
           ))}
         </div>
       )}
-
-      <Sheet open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <SheetContent dir="rtl" side="left" className="w-full sm:max-w-xl overflow-y-auto">
-          {selected && (
-            <>
-              <SheetHeader>
-                <SheetTitle className="text-xl">{selected.name}</SheetTitle>
-                <SheetDescription>
-                  {selected.age ? `${selected.age} سنة` : ""} • {selected.phone ?? "—"}
-                </SheetDescription>
-              </SheetHeader>
-
-              <div className="mt-6 space-y-6">
-                {selected.allergies && (
-                  <Card className="p-3 border-destructive/30 bg-destructive/5">
-                    <p className="flex items-center gap-2 text-sm font-semibold text-destructive">
-                      <AlertTriangle className="h-4 w-4" /> الحساسية: {selected.allergies}
-                    </p>
-                  </Card>
-                )}
-
-                <div>
-                  <h3 className="mb-2 font-semibold">سجل المواعيد ({appts.length})</h3>
-                  {appts.length === 0 ? (
-                    <p className="text-xs text-muted-foreground">لا توجد مواعيد</p>
-                  ) : (
-                    <ul className="space-y-2">
-                      {appts.map((a) => (
-                        <li key={a.id} className="rounded-lg border p-2 text-sm flex items-center justify-between">
-                          <span>{formatDate(a.date)} • {formatTime(a.time)}</span>
-                          <StatusBadge status={a.status} />
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-
-                <div>
-                  <h3 className="mb-2 font-semibold">السجل الطبي ({history.length})</h3>
-                  {history.length === 0 ? (
-                    <p className="text-xs text-muted-foreground">لا توجد سجلات</p>
-                  ) : (
-                    <ul className="space-y-2">
-                      {history.map((h) => (
-                        <li key={h.id} className="rounded-lg border p-3 text-sm">
-                          <p className="font-medium">{formatDate(h.visit_date)}</p>
-                          {h.diagnosis && <p className="text-xs text-muted-foreground mt-1">التشخيص: {h.diagnosis}</p>}
-                          {h.prescriptions && <p className="text-xs text-muted-foreground">الوصفة: {h.prescriptions}</p>}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-
-                <div>
-                  <h3 className="mb-2 flex items-center gap-2 font-semibold">
-                    <Pill className="h-4 w-4 text-accent" /> الأدوية ({meds.length})
-                  </h3>
-                  {meds.length === 0 ? (
-                    <p className="text-xs text-muted-foreground">لا توجد أدوية نشطة</p>
-                  ) : (
-                    <ul className="space-y-2">
-                      {meds.map((m) => (
-                        <li key={m.id} className="rounded-lg border p-2 text-sm">
-                          <p className="font-medium">{m.medication_name}</p>
-                          <p className="text-xs text-muted-foreground">{m.dosage}</p>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
-            </>
-          )}
-        </SheetContent>
-      </Sheet>
     </div>
   );
 };
