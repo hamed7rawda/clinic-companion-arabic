@@ -141,7 +141,25 @@ const Patients = () => {
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     maxLength={100}
+                    placeholder="مثال: أحمد محمد علي"
                   />
+                  {duplicates.length > 0 && (
+                    <div className="mt-2 rounded-md border border-warning/40 bg-warning/10 p-2 text-xs space-y-1">
+                      <p className="font-semibold text-warning-foreground flex items-center gap-1">
+                        <AlertTriangle className="h-3.5 w-3.5" /> يوجد {duplicates.length} مريض باسم مشابه:
+                      </p>
+                      <ul className="ps-4 list-disc text-muted-foreground">
+                        {duplicates.slice(0, 3).map((d) => (
+                          <li key={d.id}>{d.name}{d.phone ? ` — ${d.phone}` : ""}</li>
+                        ))}
+                      </ul>
+                      <p className="text-muted-foreground">أضف تمييزاً للاسم (اسم الأب/اللقب) أو أكد المتابعة.</p>
+                      <label className="flex items-center gap-2 cursor-pointer mt-1">
+                        <input type="checkbox" checked={forceUnique} onChange={(e) => setForceUnique(e.target.checked)} />
+                        <span>أؤكد أنه شخص مختلف رغم تشابه الاسم</span>
+                      </label>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <Label>العمر</Label>
