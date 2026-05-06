@@ -1,8 +1,8 @@
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard, CalendarDays, Users, ListOrdered, FileText,
+  LayoutDashboard, CalendarDays, Users, ListOrdered,
   BarChart3, Settings as SettingsIcon, Activity, Stethoscope, Receipt,
-  TrendingUp, Webhook, LogOut, Home, ShieldCheck, UserCheck, Pill, FlaskConical,
+  TrendingUp, Webhook, LogOut, Home, ShieldCheck, Pill, FlaskConical,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
@@ -15,21 +15,19 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { RoleSwitcher } from "@/components/auth/RoleSwitcher";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 type NavEntry = { title: string; url: string; icon: typeof LayoutDashboard; roles?: AppRole[]; external?: boolean };
 
 const mainItems: NavEntry[] = [
   { title: "القائمة الرئيسية", url: "/", icon: Home },
   { title: "لوحة التحكم", url: "/dashboard", icon: LayoutDashboard, roles: ["doctor", "reception"] },
-  { title: "المواعيد", url: "/appointments", icon: CalendarDays, roles: ["doctor", "reception"] },
+  { title: "المواعيد", url: "/appointments", icon: CalendarDays, roles: ["doctor", "reception", "nurse"] },
   { title: "المرضى", url: "/patients", icon: Users, roles: ["doctor", "nurse", "reception"] },
   { title: "قائمة الانتظار", url: "/queue", icon: ListOrdered, roles: ["doctor", "nurse", "reception"] },
-  { title: "تسجيل الدخول", url: "/check-in", icon: UserCheck, roles: ["nurse", "doctor"] },
-  { title: "العلامات الحيوية", url: "/vitals", icon: Activity, roles: ["nurse", "doctor"] },
 ];
 
 const recordsItems: NavEntry[] = [
-  { title: "السجلات الطبية", url: "/medical-history", icon: FileText, roles: ["doctor"] },
   { title: "الفواتير", url: "/invoices", icon: Receipt, roles: ["doctor", "reception"] },
   { title: "التقارير", url: "/reports", icon: BarChart3, roles: ["doctor"] },
   { title: "الإحصائيات", url: "/statistics", icon: TrendingUp, roles: ["doctor"] },
@@ -159,6 +157,7 @@ export function ClinicLayout() {
               <span className="text-muted-foreground">النظام نشط</span>
             </div>
             <div className="ms-auto flex items-center gap-3">
+              <ThemeToggle />
               <RoleSwitcher />
               <Badge variant="secondary" className="text-xs">{ROLE_LABEL[activeRole]}</Badge>
               <span className="hidden sm:inline text-xs text-muted-foreground truncate max-w-[140px]">
