@@ -280,14 +280,26 @@ const Appointments = () => {
                       <RatingStars rating={a.rating} />
                     </TableCell>
                     <TableCell>
-                      <div className="flex gap-1">
-                        {a.status === "booked" && (
+                      <div className="flex gap-1 flex-wrap">
+                        {(a.status === "booked" || a.status === "rescheduled") && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 text-primary hover:bg-primary/10 gap-1"
+                            onClick={() => checkIn(a)}
+                            title="تسجيل دخول المريض إلى طابور الانتظار"
+                          >
+                            <LogIn className="h-4 w-4" /> دخول
+                          </Button>
+                        )}
+                        {a.status !== "completed" && a.status !== "cancelled" && (
                           <>
                             <Button
                               size="sm"
                               variant="ghost"
                               className="h-8 text-success hover:bg-success/10"
                               onClick={() => updateStatus(a.id, "completed", a.patient_name)}
+                              title="إكمال"
                             >
                               <CheckCircle2 className="h-4 w-4" />
                             </Button>
@@ -297,6 +309,7 @@ const Appointments = () => {
                                   size="sm"
                                   variant="ghost"
                                   className="h-8 text-destructive hover:bg-destructive/10"
+                                  title="إلغاء"
                                 >
                                   <X className="h-4 w-4" />
                                 </Button>
@@ -326,6 +339,7 @@ const Appointments = () => {
                               variant="ghost"
                               className="h-8 text-warning hover:bg-warning/10"
                               onClick={() => openReschedule(a)}
+                              title="إعادة جدولة"
                             >
                               <RefreshCw className="h-4 w-4" />
                             </Button>
