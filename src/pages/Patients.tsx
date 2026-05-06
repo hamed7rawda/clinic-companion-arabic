@@ -1,17 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -28,10 +22,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Search, UserPlus, Phone, Calendar, AlertTriangle, Pill } from "lucide-react";
+import { Search, UserPlus, Phone, Calendar, AlertTriangle, Mic } from "lucide-react";
 import { toast } from "sonner";
-import { formatDate, formatTime, logActivity } from "@/lib/clinic-utils";
-import { StatusBadge } from "@/components/shared/StatusBadge";
+import { formatDate, logActivity } from "@/lib/clinic-utils";
 import { z } from "zod";
 
 interface Patient {
@@ -58,14 +51,13 @@ const patientSchema = z.object({
 });
 
 const Patients = () => {
+  const navigate = useNavigate();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<Patient | null>(null);
-  const [history, setHistory] = useState<any[]>([]);
-  const [appts, setAppts] = useState<any[]>([]);
-  const [meds, setMeds] = useState<any[]>([]);
   const [addOpen, setAddOpen] = useState(false);
   const [form, setForm] = useState({ name: "", age: "", phone: "", address: "", gender: "", medical_history: "", allergies: "" });
+  const [duplicates, setDuplicates] = useState<Patient[]>([]);
+  const [forceUnique, setForceUnique] = useState(false);
 
   const load = async () => {
     const { data } = await supabase
@@ -79,17 +71,16 @@ const Patients = () => {
     load();
   }, []);
 
-  const openPatient = async (p: Patient) => {
-    setSelected(p);
-    const [{ data: a }, { data: h }, { data: m }] = await Promise.all([
-      supabase.from("appointments").select("*").eq("patient_name", p.name).order("date", { ascending: false }),
-      supabase.from("medical_history").select("*").eq("patient_name", p.name).order("visit_date", { ascending: false }),
-      supabase.from("prescriptions").select("*").eq("patient_name", p.name),
-    ]);
-    setAppts(a ?? []);
-    setHistory(h ?? []);
-    setMeds(m ?? []);
-  };
+  // Detect possible duplicates while typing
+  useEffect(() => {
+    const n = form.name.trim();
+    if (n.length < 2) { setDuplicates([]); return; }
+    const exact = patients.filter((p) => p.name.trim() === n || p.name.includes(n) || n.includes(p.name));
+    setDuplicates(exact);
+    setForceUnique(false);
+  }, [form.name, patients]);
+
+  const openPatient = (p: Patient) => navigate(`/patient/${p.id}`);
 
   const filtered = patients.filter(
     (p) =>
@@ -104,8 +95,12 @@ const Patients = () => {
       toast.error(result.error.errors[0].message);
       return;
     }
+    if (duplicates.length > 0 && !forceUnique) {
+      toast.error("يوجد مريض بنفس الاسم. أضف تمييزاً للاسم (مثل اسم الأب) أو أكد المتابعة.");
+      return;
+    }
     const ageVal = parseInt(form.age, 10);
-    const { error } = await supabase.from("patients").insert({
+    const { data: inserted, error } = await supabase.from("patients").insert({
       name: form.name.trim(),
       age: isNaN(ageVal) ? null : ageVal,
       phone: form.phone.trim() || null,
@@ -113,13 +108,14 @@ const Patients = () => {
       gender: form.gender.trim() || null,
       medical_history: form.medical_history.trim() || null,
       allergies: form.allergies.trim() || null,
-    });
+    }).select("id").maybeSingle();
     if (error) return toast.error(error.message);
     await logActivity(supabase, "patient_added", `تم تسجيل مريض جديد: ${form.name}`);
     toast.success("تمت إضافة المريض");
     setForm({ name: "", age: "", phone: "", address: "", gender: "", medical_history: "", allergies: "" });
     setAddOpen(false);
     load();
+    if (inserted?.id) navigate(`/patient/${inserted.id}`);
   };
 
   return (
