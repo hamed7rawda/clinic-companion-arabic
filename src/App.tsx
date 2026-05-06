@@ -24,8 +24,6 @@ import PublicBooking from "./pages/PublicBooking";
 import PublicRecords from "./pages/PublicRecords";
 import UserRoles from "./pages/UserRoles";
 import PatientSession from "./pages/PatientSession";
-import NurseCheckIn from "./pages/NurseCheckIn";
-import NurseVitals from "./pages/NurseVitals";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -45,11 +43,9 @@ const App = () => (
               <Route element={<ClinicLayout />}>
                 <Route path="/" element={<MainMenu />} />
                 <Route path="/dashboard" element={<RoleRoute allow={["doctor", "reception"]}><Dashboard /></RoleRoute>} />
-                <Route path="/appointments" element={<RoleRoute allow={["doctor", "reception"]}><Appointments /></RoleRoute>} />
+                <Route path="/appointments" element={<RoleRoute allow={["doctor", "reception", "nurse"]}><Appointments /></RoleRoute>} />
                 <Route path="/patients" element={<RoleRoute allow={["doctor", "nurse", "reception"]}><Patients /></RoleRoute>} />
                 <Route path="/queue" element={<RoleRoute allow={["doctor", "nurse", "reception"]}><Queue /></RoleRoute>} />
-                <Route path="/check-in" element={<RoleRoute allow={["nurse", "doctor"]}><NurseCheckIn /></RoleRoute>} />
-                <Route path="/vitals" element={<RoleRoute allow={["nurse", "doctor"]}><NurseVitals /></RoleRoute>} />
                 <Route path="/medical-history" element={<RoleRoute allow={["doctor"]}><MedicalHistory /></RoleRoute>} />
                 <Route path="/patient/:id" element={<RoleRoute allow={["doctor"]}><PatientSession /></RoleRoute>} />
                 <Route path="/invoices" element={<RoleRoute allow={["doctor", "reception"]}><Invoices /></RoleRoute>} />

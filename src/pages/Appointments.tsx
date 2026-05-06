@@ -42,18 +42,19 @@ import {
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { RatingStars } from "@/components/shared/RatingStars";
 import { Textarea } from "@/components/ui/textarea";
-import { CheckCircle2, X, RefreshCw, CalendarDays, List, Plus } from "lucide-react";
+import { CheckCircle2, X, RefreshCw, CalendarDays, List, Plus, LogIn } from "lucide-react";
 import { toast } from "sonner";
 import { formatDate, formatTime, logActivity } from "@/lib/clinic-utils";
 import { ar } from "date-fns/locale";
 
 interface Appointment {
   id: string;
+  patient_id: string | null;
   patient_name: string;
   date: string;
   time: string;
   complaint: string | null;
-  status: "booked" | "completed" | "cancelled" | "rescheduled";
+  status: "booked" | "completed" | "cancelled" | "rescheduled" | "checked_in";
   rating: number | null;
 }
 
@@ -129,6 +130,17 @@ const Appointments = () => {
     };
     await logActivity(supabase, `appointment_${status}`, `تم ${labels[status]} موعد ${name}`);
     toast.success("تم تحديث الموعد");
+  };
+
+  const checkIn = async (a: Appointment) => {
+    const { error: qErr } = await supabase.from("queue").insert({
+      patient_id: a.patient_id, patient_name: a.patient_name,
+      position: Date.now() % 1000, status: "waiting",
+    });
+    if (qErr) { toast.error("فشل تسجيل الدخول: " + qErr.message); return; }
+    await supabase.from("appointments").update({ status: "checked_in" }).eq("id", a.id);
+    await logActivity(supabase, "patient_checked_in", `تم تسجيل دخول ${a.patient_name} لطابور الانتظار`);
+    toast.success(`تم تسجيل دخول ${a.patient_name}`);
   };
 
   const openReschedule = (a: Appointment) => {
@@ -268,14 +280,26 @@ const Appointments = () => {
                       <RatingStars rating={a.rating} />
                     </TableCell>
                     <TableCell>
-                      <div className="flex gap-1">
-                        {a.status === "booked" && (
+                      <div className="flex gap-1 flex-wrap">
+                        {(a.status === "booked" || a.status === "rescheduled") && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 text-primary hover:bg-primary/10 gap-1"
+                            onClick={() => checkIn(a)}
+                            title="تسجيل دخول المريض إلى طابور الانتظار"
+                          >
+                            <LogIn className="h-4 w-4" /> دخول
+                          </Button>
+                        )}
+                        {a.status !== "completed" && a.status !== "cancelled" && (
                           <>
                             <Button
                               size="sm"
                               variant="ghost"
                               className="h-8 text-success hover:bg-success/10"
                               onClick={() => updateStatus(a.id, "completed", a.patient_name)}
+                              title="إكمال"
                             >
                               <CheckCircle2 className="h-4 w-4" />
                             </Button>
@@ -285,6 +309,7 @@ const Appointments = () => {
                                   size="sm"
                                   variant="ghost"
                                   className="h-8 text-destructive hover:bg-destructive/10"
+                                  title="إلغاء"
                                 >
                                   <X className="h-4 w-4" />
                                 </Button>
@@ -314,6 +339,7 @@ const Appointments = () => {
                               variant="ghost"
                               className="h-8 text-warning hover:bg-warning/10"
                               onClick={() => openReschedule(a)}
+                              title="إعادة جدولة"
                             >
                               <RefreshCw className="h-4 w-4" />
                             </Button>

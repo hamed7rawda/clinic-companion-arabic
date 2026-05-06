@@ -1,17 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -28,10 +22,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Search, UserPlus, Phone, Calendar, AlertTriangle, Pill } from "lucide-react";
+import { Search, UserPlus, Phone, Calendar, AlertTriangle, Mic } from "lucide-react";
 import { toast } from "sonner";
-import { formatDate, formatTime, logActivity } from "@/lib/clinic-utils";
-import { StatusBadge } from "@/components/shared/StatusBadge";
+import { formatDate, logActivity } from "@/lib/clinic-utils";
 import { z } from "zod";
 
 interface Patient {
@@ -58,14 +51,13 @@ const patientSchema = z.object({
 });
 
 const Patients = () => {
+  const navigate = useNavigate();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<Patient | null>(null);
-  const [history, setHistory] = useState<any[]>([]);
-  const [appts, setAppts] = useState<any[]>([]);
-  const [meds, setMeds] = useState<any[]>([]);
   const [addOpen, setAddOpen] = useState(false);
   const [form, setForm] = useState({ name: "", age: "", phone: "", address: "", gender: "", medical_history: "", allergies: "" });
+  const [duplicates, setDuplicates] = useState<Patient[]>([]);
+  const [forceUnique, setForceUnique] = useState(false);
 
   const load = async () => {
     const { data } = await supabase
@@ -79,17 +71,16 @@ const Patients = () => {
     load();
   }, []);
 
-  const openPatient = async (p: Patient) => {
-    setSelected(p);
-    const [{ data: a }, { data: h }, { data: m }] = await Promise.all([
-      supabase.from("appointments").select("*").eq("patient_name", p.name).order("date", { ascending: false }),
-      supabase.from("medical_history").select("*").eq("patient_name", p.name).order("visit_date", { ascending: false }),
-      supabase.from("prescriptions").select("*").eq("patient_name", p.name),
-    ]);
-    setAppts(a ?? []);
-    setHistory(h ?? []);
-    setMeds(m ?? []);
-  };
+  // Detect possible duplicates while typing
+  useEffect(() => {
+    const n = form.name.trim();
+    if (n.length < 2) { setDuplicates([]); return; }
+    const exact = patients.filter((p) => p.name.trim() === n || p.name.includes(n) || n.includes(p.name));
+    setDuplicates(exact);
+    setForceUnique(false);
+  }, [form.name, patients]);
+
+  const openPatient = (p: Patient) => navigate(`/patient/${p.id}`);
 
   const filtered = patients.filter(
     (p) =>
@@ -104,8 +95,12 @@ const Patients = () => {
       toast.error(result.error.errors[0].message);
       return;
     }
+    if (duplicates.length > 0 && !forceUnique) {
+      toast.error("يوجد مريض بنفس الاسم. أضف تمييزاً للاسم (مثل اسم الأب) أو أكد المتابعة.");
+      return;
+    }
     const ageVal = parseInt(form.age, 10);
-    const { error } = await supabase.from("patients").insert({
+    const { data: inserted, error } = await supabase.from("patients").insert({
       name: form.name.trim(),
       age: isNaN(ageVal) ? null : ageVal,
       phone: form.phone.trim() || null,
@@ -113,13 +108,14 @@ const Patients = () => {
       gender: form.gender.trim() || null,
       medical_history: form.medical_history.trim() || null,
       allergies: form.allergies.trim() || null,
-    });
+    }).select("id").maybeSingle();
     if (error) return toast.error(error.message);
     await logActivity(supabase, "patient_added", `تم تسجيل مريض جديد: ${form.name}`);
     toast.success("تمت إضافة المريض");
     setForm({ name: "", age: "", phone: "", address: "", gender: "", medical_history: "", allergies: "" });
     setAddOpen(false);
     load();
+    if (inserted?.id) navigate(`/patient/${inserted.id}`);
   };
 
   return (
@@ -145,7 +141,25 @@ const Patients = () => {
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     maxLength={100}
+                    placeholder="مثال: أحمد محمد علي"
                   />
+                  {duplicates.length > 0 && (
+                    <div className="mt-2 rounded-md border border-warning/40 bg-warning/10 p-2 text-xs space-y-1">
+                      <p className="font-semibold text-warning-foreground flex items-center gap-1">
+                        <AlertTriangle className="h-3.5 w-3.5" /> يوجد {duplicates.length} مريض باسم مشابه:
+                      </p>
+                      <ul className="ps-4 list-disc text-muted-foreground">
+                        {duplicates.slice(0, 3).map((d) => (
+                          <li key={d.id}>{d.name}{d.phone ? ` — ${d.phone}` : ""}</li>
+                        ))}
+                      </ul>
+                      <p className="text-muted-foreground">أضف تمييزاً للاسم (اسم الأب/اللقب) أو أكد المتابعة.</p>
+                      <label className="flex items-center gap-2 cursor-pointer mt-1">
+                        <input type="checkbox" checked={forceUnique} onChange={(e) => setForceUnique(e.target.checked)} />
+                        <span>أؤكد أنه شخص مختلف رغم تشابه الاسم</span>
+                      </label>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <Label>العمر</Label>
@@ -232,7 +246,7 @@ const Patients = () => {
             <Card
               key={p.id}
               onClick={() => openPatient(p)}
-              className="p-4 shadow-card hover:shadow-elevated transition-smooth cursor-pointer border-0"
+              className="p-4 shadow-card hover:shadow-elevated transition-smooth cursor-pointer border-0 group"
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-3 min-w-0">
@@ -246,6 +260,7 @@ const Patients = () => {
                     </p>
                   </div>
                 </div>
+                <Mic className="h-4 w-4 text-primary opacity-0 group-hover:opacity-100 transition-smooth" />
               </div>
               <div className="mt-3 space-y-1.5 text-xs">
                 {p.phone && (
@@ -266,82 +281,6 @@ const Patients = () => {
           ))}
         </div>
       )}
-
-      <Sheet open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <SheetContent dir="rtl" side="left" className="w-full sm:max-w-xl overflow-y-auto">
-          {selected && (
-            <>
-              <SheetHeader>
-                <SheetTitle className="text-xl">{selected.name}</SheetTitle>
-                <SheetDescription>
-                  {selected.age ? `${selected.age} سنة` : ""} • {selected.phone ?? "—"}
-                </SheetDescription>
-              </SheetHeader>
-
-              <div className="mt-6 space-y-6">
-                {selected.allergies && (
-                  <Card className="p-3 border-destructive/30 bg-destructive/5">
-                    <p className="flex items-center gap-2 text-sm font-semibold text-destructive">
-                      <AlertTriangle className="h-4 w-4" /> الحساسية: {selected.allergies}
-                    </p>
-                  </Card>
-                )}
-
-                <div>
-                  <h3 className="mb-2 font-semibold">سجل المواعيد ({appts.length})</h3>
-                  {appts.length === 0 ? (
-                    <p className="text-xs text-muted-foreground">لا توجد مواعيد</p>
-                  ) : (
-                    <ul className="space-y-2">
-                      {appts.map((a) => (
-                        <li key={a.id} className="rounded-lg border p-2 text-sm flex items-center justify-between">
-                          <span>{formatDate(a.date)} • {formatTime(a.time)}</span>
-                          <StatusBadge status={a.status} />
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-
-                <div>
-                  <h3 className="mb-2 font-semibold">السجل الطبي ({history.length})</h3>
-                  {history.length === 0 ? (
-                    <p className="text-xs text-muted-foreground">لا توجد سجلات</p>
-                  ) : (
-                    <ul className="space-y-2">
-                      {history.map((h) => (
-                        <li key={h.id} className="rounded-lg border p-3 text-sm">
-                          <p className="font-medium">{formatDate(h.visit_date)}</p>
-                          {h.diagnosis && <p className="text-xs text-muted-foreground mt-1">التشخيص: {h.diagnosis}</p>}
-                          {h.prescriptions && <p className="text-xs text-muted-foreground">الوصفة: {h.prescriptions}</p>}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-
-                <div>
-                  <h3 className="mb-2 flex items-center gap-2 font-semibold">
-                    <Pill className="h-4 w-4 text-accent" /> الأدوية ({meds.length})
-                  </h3>
-                  {meds.length === 0 ? (
-                    <p className="text-xs text-muted-foreground">لا توجد أدوية نشطة</p>
-                  ) : (
-                    <ul className="space-y-2">
-                      {meds.map((m) => (
-                        <li key={m.id} className="rounded-lg border p-2 text-sm">
-                          <p className="font-medium">{m.medication_name}</p>
-                          <p className="text-xs text-muted-foreground">{m.dosage}</p>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
-            </>
-          )}
-        </SheetContent>
-      </Sheet>
     </div>
   );
 };
