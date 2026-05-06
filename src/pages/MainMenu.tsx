@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/shared/PageHeader";
 import {
-  LayoutDashboard, CalendarDays, Users, ListOrdered, FileText,
+  LayoutDashboard, CalendarDays, Users, ListOrdered,
   Receipt, BarChart3, TrendingUp, Activity, Webhook, Settings as SettingsIcon, ShieldCheck,
-  UserCheck, Pill, FlaskConical,
+  Pill, FlaskConical, Mic,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth, AppRole } from "@/hooks/useAuth";
