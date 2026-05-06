@@ -60,6 +60,22 @@ const MainMenu = () => {
   return (
     <div className="space-y-8">
       <PageHeader title="القائمة الرئيسية" description="اختر القسم الذي تريد الانتقال إليه" />
+      {activeRole === "doctor" && (
+        <Link to="/patients">
+          <Card className="p-5 shadow-elevated border-0 gradient-primary text-primary-foreground flex items-center justify-between gap-4 hover:shadow-glow transition-smooth">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20">
+                <Mic className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="font-bold">بدء جلسة كشف</p>
+                <p className="text-xs opacity-90">اختر المريض من سجل المرضى لبدء التسجيل والاطلاع على ملفه الكامل</p>
+              </div>
+            </div>
+            <Button variant="secondary" className="shrink-0">افتح سجل المرضى</Button>
+          </Card>
+        </Link>
+      )}
       {visible.map((g) => (
         <section key={g.label} className="space-y-3">
           <h2 className={cn("text-base font-bold", g.color)}>{g.label}</h2>
