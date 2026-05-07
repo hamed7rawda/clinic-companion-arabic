@@ -8,6 +8,7 @@ import { AuthProvider } from "./hooks/useAuth";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { RoleRoute } from "./components/auth/RoleRoute";
 import Auth from "./pages/Auth";
+import Landing from "./pages/Landing";
 import MainMenu from "./pages/MainMenu";
 import Dashboard from "./pages/Dashboard";
 import Appointments from "./pages/Appointments";
