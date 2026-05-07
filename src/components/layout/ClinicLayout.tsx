@@ -20,7 +20,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 type NavEntry = { title: string; url: string; icon: typeof LayoutDashboard; roles?: AppRole[]; external?: boolean };
 
 const mainItems: NavEntry[] = [
-  { title: "القائمة الرئيسية", url: "/", icon: Home },
+  { title: "القائمة الرئيسية", url: "/home", icon: Home },
   { title: "لوحة التحكم", url: "/dashboard", icon: LayoutDashboard, roles: ["doctor", "reception"] },
   { title: "المواعيد", url: "/appointments", icon: CalendarDays, roles: ["doctor", "reception", "nurse"] },
   { title: "المرضى", url: "/patients", icon: Users, roles: ["doctor", "nurse", "reception"] },
@@ -96,7 +96,7 @@ function ClinicSidebar() {
       <SidebarContent>
         {isPatient ? (
           <Group label="بوابة المريض" labelColor="text-violet-200/90" iconColor="text-violet-300/90"
-            items={[{ title: "القائمة الرئيسية", url: "/", icon: Home }, ...patientItems]}
+            items={[{ title: "القائمة الرئيسية", url: "/home", icon: Home }, ...patientItems]}
             renderItems={renderItems} collapsed={collapsed} />
         ) : (
           <>

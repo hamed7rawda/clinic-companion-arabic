@@ -8,6 +8,7 @@ import { AuthProvider } from "./hooks/useAuth";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { RoleRoute } from "./components/auth/RoleRoute";
 import Auth from "./pages/Auth";
+import Landing from "./pages/Landing";
 import MainMenu from "./pages/MainMenu";
 import Dashboard from "./pages/Dashboard";
 import Appointments from "./pages/Appointments";
@@ -36,12 +37,13 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
+            <Route path="/" element={<Landing />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/book" element={<PublicBooking />} />
             <Route path="/my-records" element={<PublicRecords />} />
             <Route element={<ProtectedRoute />}>
               <Route element={<ClinicLayout />}>
-                <Route path="/" element={<MainMenu />} />
+                <Route path="/home" element={<MainMenu />} />
                 <Route path="/dashboard" element={<RoleRoute allow={["doctor", "reception"]}><Dashboard /></RoleRoute>} />
                 <Route path="/appointments" element={<RoleRoute allow={["doctor", "reception", "nurse"]}><Appointments /></RoleRoute>} />
                 <Route path="/patients" element={<RoleRoute allow={["doctor", "nurse", "reception"]}><Patients /></RoleRoute>} />
