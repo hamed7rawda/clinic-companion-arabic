@@ -24,7 +24,7 @@ export default function Auth() {
   const [name, setName] = useState("");
 
   useEffect(() => {
-    if (!loading && user) navigate("/", { replace: true });
+    if (!loading && user) navigate("/home", { replace: true });
   }, [user, loading, navigate]);
 
   if (loading) return null;
@@ -48,7 +48,7 @@ export default function Auth() {
       return toast.error("بيانات الدخول غير صحيحة");
     }
     toast.success("مرحباً بك");
-    navigate("/", { replace: true });
+    navigate("/home", { replace: true });
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
